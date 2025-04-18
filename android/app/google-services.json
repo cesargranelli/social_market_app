@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183973726892",
+    "project_id": "social-market-54482",
+    "storage_bucket": "social-market-54482.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183973726892:android:22454033781defda416d09",
+        "android_client_info": {
+          "package_name": "com.example.social_market_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClGK9_ZNGYfZy2uu54s03mZe2Upqu6mhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
