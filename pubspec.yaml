@@ -15,6 +15,11 @@ dependencies:
   firebase_ui_auth: ^1.16.1
   firebase_ui_oauth_google: ^1.4.1
   google_sign_in: ^6.3.0
+  flutter_confetti: ^0.5.1
+  flutter_animation_progress_bar: ^2.3.1
+  cached_network_image: ^3.4.1
+  timeago: ^3.6.0
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:
