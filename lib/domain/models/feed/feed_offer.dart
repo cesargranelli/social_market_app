@@ -1,5 +1,5 @@
 class FeedOffer {
-  final String userName; // usuario // username
+  final String username; // usuario // username
   final String userHandle;
   final String profileImageUrl; // userImage
   final String text; // texto // descricao // content
@@ -20,7 +20,7 @@ class FeedOffer {
   //
 
   FeedOffer({
-    required this.userName,
+    required this.username,
     required this.userHandle,
     required this.profileImageUrl,
     required this.text,
