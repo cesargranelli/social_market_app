@@ -2,8 +2,8 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 
-class TimelineScreen extends StatelessWidget {
-  TimelineScreen({super.key});
+class FeedTimelineScreen extends StatelessWidget {
+  FeedTimelineScreen({super.key});
 
   // Dados fictícios para a timeline
   final List<TimelineItem> items = [
