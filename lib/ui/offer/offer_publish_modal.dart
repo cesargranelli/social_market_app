@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:social_market_app/data/repositories/offers/offers_mock.dart';
 import 'package:social_market_app/domain/models/feed/feed_offer.dart';
 import 'package:uuid/uuid.dart';
 
 class OfferPublishModal extends StatefulWidget {
-  const OfferPublishModal({super.key});
+  final Function onOfferAdded;
+
+  const OfferPublishModal({super.key, required this.onOfferAdded});
 
   @override
   State<OfferPublishModal> createState() => _OfferPublishModalState();
@@ -148,7 +151,9 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
         userHandle: 'userHandle',
         profileImageUrl: 'profileImageUrl',
         text: _textController.text,
-        images: [],
+        images: [
+          "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
+        ],
         createdAt: DateTime.now(),
         category: 'categoria',
         store: 'mercado',
@@ -160,12 +165,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
         bought: 0,
       );
 
-      print(feedOffer.id);
-      print(feedOffer.text);
-
-      // offers.add(feedOffer);
-      FeedOfferMockRepository().addOffer(feedOffer);
-      print(offers.length);
+      widget.onOfferAdded(feedOffer);
 
       closeModal();
     }

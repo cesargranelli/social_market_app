@@ -1,22 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../domain/models/feed/feed_offer.dart';
 
-class FeedOfferMockRepository extends ChangeNotifier {
-  // This is a mock repository. In a real application, this would interact with a database or API.
-  Future<List<FeedOffer>> getAllOffers() async {
-    return offers;
-  }
-
-  void addOffer(FeedOffer offer) async {
-    // In a real application, this would save the offer to a database or API.
-    offers.add(offer);
-    notifyListeners();
-  }
-}
-
-List<FeedOffer> offers = [
+final List<FeedOffer> offers = [
   FeedOffer(
     id: Uuid().v4(),
     username: "John Doe",
