@@ -1,33 +1,35 @@
 class FeedOffer {
-  final String username; // usuario // username
+  final String id;
+  final String username;
   final String userHandle;
-  final String profileImageUrl; // userImage
-  final String text; // texto // descricao // content
-  final String? imageUrl; // postImage // imagem
-  final DateTime createdAt; // tempo // timeAgo
-  final int likes; // isLiked // isFavorita
-  final int retweets; // isRetweeted
-  final int comments;
-  //
-  // final String local; // address
-  // final String mercado; // estabelecimento // supermarketName // loja
-  // final double distanciaKm;
-  // final int reputacao;
-  // final String id; // uuid
-  // final String productName; // caption
-  // final bool isTrending; // Novo campo para ofertas em destaque
-  // final String categoria;
-  //
+  final String profileImageUrl;
+  final String text;
+  final List<String> images;
+  final DateTime createdAt;
+  final String? category;
+  final String? store;
+  final String? address;
+  final int? likes;
+  final int? retweets;
+  final int? comments;
+  final int? truth;
+  final int? bought;
 
   FeedOffer({
+    required this.id,
     required this.username,
     required this.userHandle,
     required this.profileImageUrl,
     required this.text,
-    this.imageUrl,
+    required this.images,
     required this.createdAt,
-    required this.likes,
-    required this.retweets,
-    required this.comments,
+    this.category,
+    this.store,
+    this.address,
+    this.likes,
+    this.retweets,
+    this.comments,
+    this.truth,
+    this.bought,
   });
 }

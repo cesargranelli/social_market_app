@@ -66,25 +66,23 @@ class FeedOfferItem extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(item.text),
                     ),
-                    if (item.imageUrl != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: ClipRRect(
-                          child: CachedNetworkImage(
-                            imageUrl: item.imageUrl!,
-                            width: double.infinity,
-                            height: 200,
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                            errorWidget:
-                                (context, url, error) =>
-                                    const Icon(Icons.error),
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: ClipRRect(
+                        child: CachedNetworkImage(
+                          imageUrl: item.images[0],
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          placeholder:
+                              (context, url) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                          errorWidget:
+                              (context, url, error) => const Icon(Icons.error),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -100,21 +98,21 @@ class FeedOfferItem extends StatelessWidget {
                     children: [
                       _buildInteractionButton(
                         icon: Icons.favorite_border,
-                        count: item.likes,
+                        count: item.likes ?? 0,
                         onTap: () {
                           // Handle like action
                         },
                       ),
                       _buildInteractionButton(
                         icon: Icons.mode_comment_outlined,
-                        count: item.comments,
+                        count: item.comments ?? 0,
                         onTap: () {
                           // Handle comment action
                         },
                       ),
                       _buildInteractionButton(
                         icon: Icons.repeat_outlined,
-                        count: item.retweets,
+                        count: item.retweets ?? 0,
                         onTap: () {
                           // Handle retweet action
                         },
