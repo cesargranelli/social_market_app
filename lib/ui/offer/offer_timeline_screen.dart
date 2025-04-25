@@ -5,15 +5,15 @@ import 'package:social_market_app/ui/offer/offer_publish_modal.dart';
 import '../../../data/repositories/offers/offers_mock.dart';
 import '../../../ui/feed/widgets/feed_offer_item.dart';
 
-class FeedOfferTimelineScreen extends StatefulWidget {
-  const FeedOfferTimelineScreen({super.key});
+class OfferTimelineScreen extends StatefulWidget {
+  const OfferTimelineScreen({super.key});
 
   @override
-  State<FeedOfferTimelineScreen> createState() =>
-      _FeedOfferTimelineScreenState();
+  State<OfferTimelineScreen> createState() =>
+      _OfferTimelineScreenState();
 }
 
-class _FeedOfferTimelineScreenState extends State<FeedOfferTimelineScreen> {
+class _OfferTimelineScreenState extends State<OfferTimelineScreen> {
   Future<void> _showModal() async {
     final feedOffer = await showModalBottomSheet<FeedOffer>(
       shape: const RoundedRectangleBorder(
