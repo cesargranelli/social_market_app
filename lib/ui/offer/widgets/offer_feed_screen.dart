@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:social_market_app/domain/models/feed/feed_offer.dart';
-import 'package:social_market_app/ui/offer/offer_publish_modal.dart';
+import 'package:social_market_app/ui/offer/view_models/offer_viewmodel.dart';
 
 import '../../../data/repositories/offers/offers_mock.dart';
-import '../../../ui/feed/widgets/feed_offer_item.dart';
+import '../../../domain/models/offer/offer.dart';
+import 'offer_item.dart';
+import 'offer_publish_modal.dart';
 
-class OfferTimelineScreen extends StatefulWidget {
-  const OfferTimelineScreen({super.key});
+class OfferFeedScreen extends StatefulWidget {
+  const OfferFeedScreen({super.key, required this.viewModel});
+
+  final OfferViewModel viewModel;
 
   @override
-  State<OfferTimelineScreen> createState() =>
-      _OfferTimelineScreenState();
+  State<OfferFeedScreen> createState() => _OfferFeedScreenState();
 }
 
-class _OfferTimelineScreenState extends State<OfferTimelineScreen> {
+class _OfferFeedScreenState extends State<OfferFeedScreen> {
   Future<void> _showModal() async {
-    final feedOffer = await showModalBottomSheet<FeedOffer>(
+    final offer = await showModalBottomSheet<Offer>(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
       ),
@@ -26,9 +28,10 @@ class _OfferTimelineScreenState extends State<OfferTimelineScreen> {
       },
     );
 
-    if (feedOffer != null) {
+    if (offer != null) {
       setState(() {
-        offers.add(feedOffer);
+        offers.add(offer);
+        widget.viewModel.addOffer(offer);
       });
     }
   }
@@ -41,7 +44,7 @@ class _OfferTimelineScreenState extends State<OfferTimelineScreen> {
         itemCount: offers.length,
         separatorBuilder: (context, index) => const Divider(height: 0),
         itemBuilder: (context, index) {
-          return FeedOfferItem(item: offers[index]);
+          return OfferItem(item: offers[index]);
         },
       ),
       floatingActionButton: FloatingActionButton(

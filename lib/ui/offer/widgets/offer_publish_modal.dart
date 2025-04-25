@@ -1,8 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:social_market_app/domain/models/feed/feed_offer.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../domain/models/offer/offer.dart';
 
 class OfferPublishModal extends StatefulWidget {
   const OfferPublishModal({super.key});
@@ -44,7 +45,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
                       (isLoading)
                           ? null
                           : () {
-                            onButtonCancelClicked();
+                            onButtonCancel();
                           },
                   style: const ButtonStyle(
                     shape: WidgetStatePropertyAll(CircleBorder()),
@@ -53,7 +54,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    onButtonSendClicked();
+                    onButtonPublish();
                   },
                   style: const ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(Colors.amberAccent),
@@ -131,19 +132,19 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
     );
   }
 
-  onButtonCancelClicked() {
+  onButtonCancel() {
     if (!isLoading) {
       Navigator.pop(context);
     }
   }
 
-  onButtonSendClicked() async {
+  onButtonPublish() async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
       });
 
-      FeedOffer feedOffer = FeedOffer(
+      Offer feedOffer = Offer(
         id: const Uuid().v1(),
         username: _nameController.text,
         userHandle: 'userHandle',

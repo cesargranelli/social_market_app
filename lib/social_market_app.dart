@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'data/auth/auth_gate.dart';
+import 'ui/offer/view_models/offer_viewmodel.dart';
 
 class SocialMarketApp extends StatelessWidget {
-  const SocialMarketApp({super.key});
+  const SocialMarketApp({super.key, required this.viewModel});
+
+  final OfferViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class SocialMarketApp extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.grey),
       ),
-      home: const AuthGate(),
+      home: AuthGate(viewModel: viewModel),
     );
   }
 }

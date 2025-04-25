@@ -1,17 +1,32 @@
 import 'package:social_market_app/data/repositories/offers/offers_mock.dart';
+import 'package:social_market_app/data/services/api/offer_api.dart';
 
 // import 'package:social_market_app/data/services/api/api_offer_provider.dart';
 
-import '../../../domain/models/feed/feed_offer.dart';
+import '../../../domain/models/offer/offer.dart';
 import 'offer_repository.dart';
 
 class OfferRepositoryRemote implements OfferRepository {
-  // final ApiOfferProvider _apiOfferProvider;
+  OfferRepositoryRemote({required OfferApiFirebase offerApi})
+    : _offerApi = offerApi;
 
-  // OfferRepositoryRemote(this._apiOfferProvider);
+  final OfferApiFirebase _offerApi;
 
   @override
-  Future<List<FeedOffer>> fetchOffers() async {
+  Future<void> createOffer(Offer offer) async {
+    // final response = await _apiOfferProvider.post(
+    //   '/offers',
+    //   data: offer.toJson(),
+    // );
+    // if (response.statusCode != 201) {
+    //   throw Exception('Failed to create offer');
+    // }
+    offers.add(offer);
+    _offerApi.createOffer(offer);
+  }
+
+  @override
+  Future<List<Offer>> fetchOffers() async {
     // final response = await _apiOfferProvider.get('/offers');
     // if (response.statusCode == 200) {
     //   final List<dynamic> data = response.data;
@@ -23,7 +38,7 @@ class OfferRepositoryRemote implements OfferRepository {
   }
 
   @override
-  Future<FeedOffer> getOfferById(String id) async {
+  Future<Offer> getOfferById(String id) async {
     // final response = await _apiOfferProvider.get('/offers/$id');
     // if (response.statusCode == 200) {
     //   return Offer.fromJson(response.data);
@@ -34,19 +49,7 @@ class OfferRepositoryRemote implements OfferRepository {
   }
 
   @override
-  Future<void> createOffer(FeedOffer feedOffer) async {
-    // final response = await _apiOfferProvider.post(
-    //   '/offers',
-    //   data: offer.toJson(),
-    // );
-    // if (response.statusCode != 201) {
-    //   throw Exception('Failed to create offer');
-    // }
-    offers.add(feedOffer);
-  }
-
-  @override
-  Future<void> updateOffer(FeedOffer feedOffer) async {
+  Future<void> updateOffer(Offer feedOffer) async {
     // final response = await _apiOfferProvider.put(
     //   '/offers/$id',
     //   data: offer.toJson(),

@@ -1,11 +1,19 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
+import 'package:social_market_app/domain/models/offer/offer.dart';
 
-class ApiOfferProvider {
+class OfferApiFirebase {
   final String baseUrl;
 
-  ApiOfferProvider({required this.baseUrl});
+  OfferApiFirebase({required this.baseUrl});
+
+  Future<void> createOffer(Offer offer) async {
+    Map<String, dynamic> offerData = offer.toJson();
+    print(offerData);
+    await FirebaseFirestore.instance.collection("offers").add(offerData);
+  }
 
   Future<List<dynamic>> fetchOffers() async {
     final url = Uri.parse('$baseUrl/offers');
@@ -15,23 +23,6 @@ class ApiOfferProvider {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load offers');
-    }
-  }
-
-  Future<Map<String, dynamic>> createOffer(
-    Map<String, dynamic> offerData,
-  ) async {
-    final url = Uri.parse('$baseUrl/offers');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(offerData),
-    );
-
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to create offer');
     }
   }
 

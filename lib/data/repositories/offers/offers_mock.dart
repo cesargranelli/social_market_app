@@ -1,9 +1,9 @@
 import 'package:uuid/uuid.dart';
 
-import '../../../domain/models/feed/feed_offer.dart';
+import '../../../domain/models/offer/offer.dart';
 
-List<FeedOffer> offers = [
-  FeedOffer(
+List<Offer> offers = [
+  Offer(
     id: Uuid().v4(),
     username: "John Doe",
     userHandle: "@FlutterDev",
@@ -16,7 +16,7 @@ List<FeedOffer> offers = [
     retweets: 35,
     comments: 10,
   ),
-  FeedOffer(
+  Offer(
     id: Uuid().v4(),
     username: "Google",
     userHandle: "@Google",
@@ -29,12 +29,12 @@ List<FeedOffer> offers = [
     retweets: 92,
     comments: 28,
   ),
-  FeedOffer(
+  Offer(
     id: Uuid().v4(),
     username: "Jane Smith",
     userHandle: "@elonmusk",
     profileImageUrl: "https://picsum.photos/500/300?random=3",
-    text: "Working on something cool... 🚀",
+    text: "Working on something cool with... 🚀",
     images: ["https://picsum.photos/500/300?random=3"],
     createdAt: DateTime.now().subtract(const Duration(hours: 3)),
     likes: 1500,

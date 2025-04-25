@@ -1,4 +1,4 @@
-class FeedOffer {
+class Offer {
   final String id;
   final String username;
   final String userHandle;
@@ -15,7 +15,7 @@ class FeedOffer {
   final int? truth;
   final int? bought;
 
-  FeedOffer({
+  Offer({
     required this.id,
     required this.username,
     required this.userHandle,
@@ -32,4 +32,25 @@ class FeedOffer {
     this.truth,
     this.bought,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'userHandle': userHandle,
+      'profileImageUrl': profileImageUrl,
+      'text': text,
+      'images': images,
+      // 'createdAt': createdAt.toIso8601String(),
+      'createdAt': '',
+      'category': category,
+      'store': store,
+      'address': address,
+      'likes': likes,
+      'retweets': retweets,
+      'comments': comments,
+      'truth': truth,
+      'bought': bought,
+    };
+  }
 }

@@ -1,9 +1,9 @@
-import 'package:social_market_app/domain/models/feed/feed_offer.dart';
+import 'package:social_market_app/domain/models/offer/offer.dart';
 
 abstract class OfferRepository {
-  Future<List<FeedOffer>> fetchOffers();
-  Future<FeedOffer> getOfferById(String id);
-  Future<void> createOffer(FeedOffer feedOffer);
-  Future<void> updateOffer(FeedOffer feedOffer);
+  Future<List<Offer>> fetchOffers();
+  Future<Offer> getOfferById(String id);
+  Future<void> createOffer(Offer offer);
+  Future<void> updateOffer(Offer offer);
   Future<void> deleteOffer(String id);
 }

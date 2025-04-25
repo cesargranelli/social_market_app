@@ -2,12 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../../domain/models/feed/feed_offer.dart';
+import '../../../domain/models/offer/offer.dart';
 
-class FeedOfferItem extends StatelessWidget {
-  const FeedOfferItem({super.key, required this.item});
+class OfferItem extends StatelessWidget {
+  const OfferItem({super.key, required this.item});
 
-  final FeedOffer item;
+  final Offer item;
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +39,17 @@ class FeedOfferItem extends StatelessWidget {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            item.userHandle,
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
                           const Spacer(),
                           Text(
                             timeago.format(item.createdAt, locale: 'pt_BR'),
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            item.userHandle,
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],
@@ -60,6 +64,7 @@ class FeedOfferItem extends StatelessWidget {
             children: [
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 4),
                     Padding(
@@ -67,12 +72,13 @@ class FeedOfferItem extends StatelessWidget {
                       child: Text(item.text),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
                         child: CachedNetworkImage(
                           imageUrl: item.images[0],
                           width: double.infinity,
-                          height: 200,
+                          height: 300,
                           fit: BoxFit.cover,
                           placeholder:
                               (context, url) => const Center(
@@ -94,31 +100,50 @@ class FeedOfferItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildInteractionButton(
-                        icon: Icons.favorite_border,
+                        icon: Icons.emoji_emotions_outlined,
+                        // icon: Icons.emoji_emotions,
                         count: item.likes ?? 0,
                         onTap: () {
                           // Handle like action
                         },
                       ),
                       _buildInteractionButton(
-                        icon: Icons.mode_comment_outlined,
-                        count: item.comments ?? 0,
-                        onTap: () {
-                          // Handle comment action
-                        },
-                      ),
-                      _buildInteractionButton(
-                        icon: Icons.repeat_outlined,
+                        icon: Icons.add_shopping_cart,
+                        // icon: Icons.shopping_cart,
                         count: item.retweets ?? 0,
                         onTap: () {
                           // Handle retweet action
                         },
                       ),
+                      _buildInteractionButton(
+                        icon: Icons.mode_comment_outlined,
+                        // icon: Icons.mode_comment,
+                        count: item.comments ?? 0,
+                        onTap: () {
+                          // Handle comment action
+                        },
+                      ),
                       IconButton(
-                        icon: const Icon(Icons.share_outlined),
+                        icon: Icon(
+                          Icons.near_me_outlined,
+                          color: Colors.grey[600],
+                          size: 20,
+                        ),
+                        // icon: const Icon(Icons.cloud, size: 20),
+                        onPressed: () {
+                          // Handle share action
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.cloud_upload_outlined,
+                          color: Colors.grey[600],
+                          size: 20,
+                        ),
+                        // icon: const Icon(Icons.cloud, size: 20),
                         onPressed: () {
                           // Handle share action
                         },
@@ -141,12 +166,17 @@ class FeedOfferItem extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey[600], size: 20),
-          const SizedBox(width: 4),
-          Text('$count', style: TextStyle(color: Colors.grey[600])),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.grey[600], size: 20),
+            Text(
+              '$count',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
