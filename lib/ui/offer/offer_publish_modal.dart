@@ -5,9 +5,7 @@ import 'package:social_market_app/domain/models/feed/feed_offer.dart';
 import 'package:uuid/uuid.dart';
 
 class OfferPublishModal extends StatefulWidget {
-  final Function onOfferAdded;
-
-  const OfferPublishModal({super.key, required this.onOfferAdded});
+  const OfferPublishModal({super.key});
 
   @override
   State<OfferPublishModal> createState() => _OfferPublishModalState();
@@ -165,13 +163,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
         bought: 0,
       );
 
-      widget.onOfferAdded(feedOffer);
-
-      closeModal();
+      Navigator.pop(context, feedOffer);
     }
-  }
-
-  closeModal() {
-    Navigator.pop(context);
   }
 }

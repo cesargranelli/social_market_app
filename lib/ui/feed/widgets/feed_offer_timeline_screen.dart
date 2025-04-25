@@ -14,23 +14,23 @@ class FeedOfferTimelineScreen extends StatefulWidget {
 }
 
 class _FeedOfferTimelineScreenState extends State<FeedOfferTimelineScreen> {
-  void _updateList(FeedOffer offer) {
-    setState(() {
-      offers.add(offer);
-    });
-  }
-
-  void _showModal() {
-    showModalBottomSheet(
+  Future<void> _showModal() async {
+    final feedOffer = await showModalBottomSheet<FeedOffer>(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
       ),
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
-        return OfferPublishModal(onOfferAdded: _updateList);
+        return const OfferPublishModal();
       },
     );
+
+    if (feedOffer != null) {
+      setState(() {
+        offers.add(feedOffer);
+      });
+    }
   }
 
   @override

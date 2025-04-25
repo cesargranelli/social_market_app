@@ -1,4 +1,5 @@
 import 'package:social_market_app/data/repositories/offers/offers_mock.dart';
+
 // import 'package:social_market_app/data/services/api/api_offer_provider.dart';
 
 import '../../../domain/models/feed/feed_offer.dart';

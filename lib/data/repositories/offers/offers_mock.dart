@@ -2,7 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../domain/models/feed/feed_offer.dart';
 
-final List<FeedOffer> offers = [
+List<FeedOffer> offers = [
   FeedOffer(
     id: Uuid().v4(),
     username: "John Doe",
