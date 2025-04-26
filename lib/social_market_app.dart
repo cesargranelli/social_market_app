@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-
-import 'data/auth/auth_gate.dart';
-import 'ui/offer/view_models/offer_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:social_market_app/routing/router.dart';
 
 class SocialMarketApp extends StatelessWidget {
-  const SocialMarketApp({super.key, required this.viewModel});
-
-  final OfferViewModel viewModel;
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: "Social Market",
       theme: ThemeData(
@@ -27,7 +22,7 @@ class SocialMarketApp extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.grey),
       ),
-      home: AuthGate(viewModel: viewModel),
+      routerConfig: router(context.read()),
     );
   }
 }

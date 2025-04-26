@@ -21,7 +21,6 @@ class OfferRepositoryRemote implements OfferRepository {
     // if (response.statusCode != 201) {
     //   throw Exception('Failed to create offer');
     // }
-    offers.add(offer);
     _offerApi.createOffer(offer);
   }
 
@@ -34,7 +33,8 @@ class OfferRepositoryRemote implements OfferRepository {
     // } else {
     //   throw Exception('Failed to load offers');
     // }
-    return offers;
+    final querySnapshot = await _offerApi.fetchOffers();
+    return querySnapshot.docs.map((doc) => Offer.fromJson(doc.data())).toList();
   }
 
   @override

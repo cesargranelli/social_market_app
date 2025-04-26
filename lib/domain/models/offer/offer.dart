@@ -41,8 +41,7 @@ class Offer {
       'profileImageUrl': profileImageUrl,
       'text': text,
       'images': images,
-      // 'createdAt': createdAt.toIso8601String(),
-      'createdAt': '',
+      'createdAt': createdAt.toString(),
       'category': category,
       'store': store,
       'address': address,
@@ -52,5 +51,19 @@ class Offer {
       'truth': truth,
       'bought': bought,
     };
+  }
+
+  factory Offer.fromJson(Map<String, dynamic> json) {
+    return Offer(
+      id: json["id"] as String? ?? "123",
+      username: json["username"] as String? ?? "@Anonymous",
+      userHandle: json["userHandle"] as String? ?? "Anonymous",
+      profileImageUrl:
+          json["profileImageUrl"] as String? ?? "/images/default.png",
+      text: json["text"] as String? ?? "qualquer texto",
+      images: ["/images/default.png"],
+      createdAt: DateTime.now(),
+      category: json["category"] as String? ?? "default",
+    );
   }
 }

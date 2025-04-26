@@ -13,4 +13,8 @@ class OfferViewModel {
   void addOffer(Offer offer) {
     _offerRepository.createOffer(offer);
   }
+
+  Future<List<Offer>> getFeedOffers() {
+    return _offerRepository.fetchOffers();
+  }
 }
