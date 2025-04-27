@@ -42,7 +42,6 @@ class _OfferFeedScreenState extends State<OfferFeedScreen> {
       body: FutureBuilder(
         future: widget.viewModel.getFeedOffers(),
         builder: (context, snapshot) {
-          print(snapshot.hasData);
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {

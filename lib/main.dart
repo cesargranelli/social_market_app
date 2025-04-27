@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_market_app/config/dependencies.dart';
 
+import 'config/dependencies.dart';
 import 'firebase_options.dart';
 import 'social_market_app.dart';
 

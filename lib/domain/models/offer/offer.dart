@@ -4,7 +4,7 @@ class Offer {
   final String userHandle;
   final String profileImageUrl;
   final String text;
-  final List<String> images;
+  final List<dynamic> images;
   final DateTime createdAt;
   final String? category;
   final String? store;
@@ -35,34 +35,33 @@ class Offer {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'username': username,
-      'userHandle': userHandle,
-      'profileImageUrl': profileImageUrl,
-      'text': text,
-      'images': images,
-      'createdAt': createdAt.toString(),
-      'category': category,
-      'store': store,
-      'address': address,
-      'likes': likes,
-      'retweets': retweets,
-      'comments': comments,
-      'truth': truth,
-      'bought': bought,
+      "id": id,
+      "username": username,
+      "userHandle": userHandle,
+      "profileImageUrl": profileImageUrl,
+      "text": text,
+      "images": images,
+      "createdAt": createdAt.toString(),
+      "category": category,
+      "store": store,
+      "address": address,
+      "likes": likes,
+      "retweets": retweets,
+      "comments": comments,
+      "truth": truth,
+      "bought": bought,
     };
   }
 
   factory Offer.fromJson(Map<String, dynamic> json) {
     return Offer(
-      id: json["id"] as String? ?? "123",
+      id: json["id"],
       username: json["username"] as String? ?? "@Anonymous",
       userHandle: json["userHandle"] as String? ?? "Anonymous",
-      profileImageUrl:
-          json["profileImageUrl"] as String? ?? "/images/default.png",
-      text: json["text"] as String? ?? "qualquer texto",
-      images: ["/images/default.png"],
-      createdAt: DateTime.now(),
+      profileImageUrl: json["profileImageUrl"],
+      text: json["text"],
+      images: json["images"],
+      createdAt: DateTime.parse(json["createdAt"]),
       category: json["category"] as String? ?? "default",
     );
   }

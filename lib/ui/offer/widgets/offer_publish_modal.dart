@@ -16,7 +16,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
   // String _categoryType = "CARNES";
 
   final TextEditingController _textController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  // final TextEditingController _nameController = TextEditingController();
   // final TextEditingController _lastNameController = TextEditingController();
   // final TextEditingController _categoryController = TextEditingController();
 
@@ -144,11 +144,12 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
         isLoading = true;
       });
 
-      Offer feedOffer = Offer(
-        id: const Uuid().v1(),
-        username: _nameController.text,
-        userHandle: 'userHandle',
-        profileImageUrl: 'profileImageUrl',
+      Offer offer = Offer(
+        id: const Uuid().v4(),
+        username: "_nameController.text",
+        userHandle: '@UserHandle',
+        profileImageUrl:
+            "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
         text: _textController.text,
         images: [
           "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
@@ -164,7 +165,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
         bought: 0,
       );
 
-      Navigator.pop(context, feedOffer);
+      Navigator.pop(context, offer);
     }
   }
 }
