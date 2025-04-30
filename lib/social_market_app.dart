@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_market_app/routing/router.dart';
+
+import 'routing/router.dart';
 
 class SocialMarketApp extends StatelessWidget {
   @override

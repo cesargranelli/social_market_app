@@ -13,12 +13,7 @@ class OfferPublishModal extends StatefulWidget {
 }
 
 class _OfferPublishModalState extends State<OfferPublishModal> {
-  // String _categoryType = "CARNES";
-
   final TextEditingController _textController = TextEditingController();
-  // final TextEditingController _nameController = TextEditingController();
-  // final TextEditingController _lastNameController = TextEditingController();
-  // final TextEditingController _categoryController = TextEditingController();
 
   bool isLoading = false;
 
@@ -86,46 +81,6 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
               ),
             ),
             const SizedBox(height: 16),
-            // Chip(
-            //   avatar: CircleAvatar(
-            //     backgroundColor: Colors.grey.shade800,
-            //     child: const Text('AB'),
-            //   ),
-            //   label: const Text('Aaron Burr'),
-            // ),
-            // const SizedBox(height: 16),
-            // TextFormField(
-            //   controller: _nameController,
-            //   decoration: const InputDecoration(
-            //     label: Text("Essa oferta é do Extra da rua X número 100?"),
-            //   ),
-            // ),
-            // TextFormField(
-            //   controller: _lastNameController,
-            //   decoration: const InputDecoration(
-            //     label: Text("Adicione ao menos uma foto do produto e o preço"),
-            //   ),
-            // ),
-            // const SizedBox(height: 16),
-            // const Text('Categoria'),
-            // DropdownButton<String>(
-            //   value: _categoryType,
-            //   isExpanded: true,
-            //   items: const [
-            //     DropdownMenuItem(value: "AMBROSIA", child: Text('Ambrosia')),
-            //     DropdownMenuItem(value: "CANJICA", child: Text('Pudim')),
-            //     DropdownMenuItem(
-            //       value: "BRIGADEIRO",
-            //       child: Text('Brigadeiro'),
-            //     ),
-            //   ],
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _categoryType = value ?? _categoryType;
-            //     });
-            //   },
-            // ),
-            // const SizedBox(height: 32),
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:social_market_app/ui/offer/view_models/offer_viewmodel.dart';
 
 import '../../../domain/models/offer/offer.dart';
+import '../view_models/offer_viewmodel.dart';
 import 'offer_item.dart';
 import 'offer_publish_modal.dart';
 
@@ -29,7 +29,6 @@ class _OfferFeedScreenState extends State<OfferFeedScreen> {
 
     if (offer != null) {
       setState(() {
-        // offers.add(offer);
         widget.viewModel.addOffer(offer);
       });
     }

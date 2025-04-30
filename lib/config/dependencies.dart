@@ -1,3 +1,5 @@
+import 'package:camera/camera.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:social_market_app/data/auth/auth_gate.dart';
