@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../domain/models/offer/offer.dart';
+import 'offer_image_picker.dart';
 
 class OfferPublishModal extends StatefulWidget {
   const OfferPublishModal({super.key});
@@ -35,25 +36,19 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
+                FloatingActionButton(
                   onPressed:
                       (isLoading)
                           ? null
                           : () {
                             onButtonCancel();
                           },
-                  style: const ButtonStyle(
-                    shape: WidgetStatePropertyAll(CircleBorder()),
-                  ),
                   child: const Icon(Icons.close, color: Colors.black),
                 ),
-                ElevatedButton(
+                FloatingActionButton(
                   onPressed: () {
                     onButtonPublish();
                   },
-                  style: const ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.amberAccent),
-                  ),
                   child:
                       (isLoading)
                           ? const SizedBox(
@@ -63,10 +58,7 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
                               color: Colors.white,
                             ),
                           )
-                          : const Text(
-                            "Publicar",
-                            style: TextStyle(color: Colors.black),
-                          ),
+                          : const Icon(Icons.upload, color: Colors.black),
                 ),
               ],
             ),
@@ -81,6 +73,38 @@ class _OfferPublishModalState extends State<OfferPublishModal> {
               ),
             ),
             const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => const OfferImagePicker(
+                              title: "Escolha uma imagem",
+                            ),
+                      ),
+                    );
+                  },
+                  backgroundColor: Colors.amberAccent,
+                  child: const Icon(Icons.photo, color: Colors.black),
+                ),
+                // FloatingActionButton(
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (context) => const OfferTakePicture(),
+                //       ),
+                //     );
+                //   },
+                //   backgroundColor: Colors.amberAccent,
+                //   child: const Icon(Icons.camera_alt, color: Colors.black),
+                // ),
+              ],
+            ),
           ],
         ),
       ),
