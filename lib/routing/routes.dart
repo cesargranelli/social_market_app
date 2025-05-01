@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 abstract final class Routes {
-  static const feed = "/";
+  static const feed = "/feed";
   static const login = "/login";
-  // static const search = '/$searchRelative';
+  static const publish = "/publish";
   // static const searchRelative = 'search';
   // static const results = '/$resultsRelative';
   // static const resultsRelative = 'results';

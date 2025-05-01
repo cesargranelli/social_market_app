@@ -1,10 +1,11 @@
 import 'package:go_router/go_router.dart';
+import 'package:social_market_app/ui/publish/widgets/publish_screen.dart';
 
 import '/data/auth/auth_gate.dart';
 import '/data/repositories/offers/offer_repository_remote.dart';
 import '/data/services/api/offer_api.dart';
-import '/ui/offer/view_models/offer_viewmodel.dart';
-import '/ui/offer/widgets/offer_feed_screen.dart';
+import '../ui/feed/view_models/feed_viewmodel.dart';
+import '../ui/feed/widgets/feed_screen.dart';
 import 'routes.dart';
 
 GoRouter router(AuthGate authGate) => GoRouter(
@@ -14,11 +15,15 @@ GoRouter router(AuthGate authGate) => GoRouter(
     GoRoute(
       path: Routes.feed,
       builder: (context, state) {
-        final viewModel = OfferViewModel(
+        final viewModel = FeedViewModel(
           offerRepository: OfferRepositoryRemote(offerApi: OfferApiFirebase()),
         );
-        return OfferFeedScreen(viewModel: viewModel);
+        return FeedScreen(viewModel: viewModel);
       },
+    ),
+    GoRoute(
+      path: Routes.publish,
+      builder: (context, state) => const PublishScreen(),
     ),
   ],
 );

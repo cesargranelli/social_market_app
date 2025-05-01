@@ -1,8 +1,8 @@
 import '../../../data/repositories/offers/offer_repository.dart';
 import '../../../domain/models/offer/offer.dart';
 
-class OfferViewModel {
-  OfferViewModel({required OfferRepository offerRepository})
+class FeedViewModel {
+  FeedViewModel({required OfferRepository offerRepository})
     : _offerRepository = offerRepository;
 
   final OfferRepository _offerRepository;
