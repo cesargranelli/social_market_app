@@ -1,44 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routing/routes.dart';
 import '../../offer/widgets/offer_item.dart';
-import '../../publish/widgets/publish_screen.dart';
 import '../view_models/feed_viewmodel.dart';
 
 class FeedScreen extends StatefulWidget {
-  const FeedScreen({super.key, required this.viewModel});
-
   final FeedViewModel viewModel;
+
+  const FeedScreen({super.key, required this.viewModel});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  Future<void> _publishScreen(BuildContext context) async {
-    final result = await Navigator.of(context).push(
-      PageRouteBuilder(
-        pageBuilder:
-            (context, animation, secondaryAnimation) => const PublishScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0);
-          const end = Offset.zero;
-          final tween = Tween(begin: begin, end: end);
-          final offsetAnimation = animation.drive(tween);
-
-          return SlideTransition(position: offsetAnimation, child: child);
-        },
-      ),
-    );
-
-    if (!context.mounted) return;
-
-    if (result != null) {
-      setState(() {
-        widget.viewModel.addOffer(result);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +29,7 @@ class _FeedScreenState extends State<FeedScreen> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No offers available'));
           }
+          snapshot.data!.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return ListView.separated(
             itemCount: snapshot.data!.length,
             separatorBuilder: (context, index) => const Divider(height: 0),
@@ -63,7 +40,7 @@ class _FeedScreenState extends State<FeedScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _publishScreen(context),
+        onPressed: () => context.push(Routes.publish),
         child: const Icon(Icons.electric_bolt_rounded, color: Colors.black),
       ),
     );

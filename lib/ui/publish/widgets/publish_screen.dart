@@ -1,13 +1,17 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../domain/models/offer/offer.dart';
 import '../../offer/widgets/offer_image_picker.dart';
+import '../view_models/publish_viewmodel.dart';
 
 class PublishScreen extends StatefulWidget {
-  const PublishScreen({super.key});
+  final PublishViewModel viewModel;
+
+  const PublishScreen({super.key, required this.viewModel});
 
   @override
   State<PublishScreen> createState() => _PublishScreenState();
@@ -116,22 +120,11 @@ class _PublishScreenState extends State<PublishScreen> {
 
   onButtonCancel() {
     if (!isLoading) {
-      Navigator.pop(
-        context,
-        Offer(
-          id: "",
-          username: "",
-          userHandle: "",
-          profileImageUrl: "",
-          text: "",
-          images: [],
-          createdAt: DateTime.now(),
-        ),
-      );
+      context.pop(context);
     }
   }
 
-  onButtonPublish() async {
+  onButtonPublish() {
     if (!isLoading) {
       setState(() {
         isLoading = true;
@@ -158,7 +151,12 @@ class _PublishScreenState extends State<PublishScreen> {
         bought: 0,
       );
 
-      Navigator.pop(context, offer);
+      widget.viewModel.addOffer(offer);
+      setState(() {
+        isLoading = false;
+      });
+
+      context.pop(context);
     }
   }
 }

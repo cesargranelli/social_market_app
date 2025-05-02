@@ -22,7 +22,7 @@ List<Offer> offers = [
     userHandle: "@Google",
     profileImageUrl: "https://picsum.photos/seed/2/600/300",
     text:
-        "Exciting news in AI research! 🧠 We\'re pushing the boundaries of what\'s possible. Learn more here: link.google/ai",
+        "Exciting news in AI research! 🧠 We're pushing the boundaries of what's possible. Learn more here: link.google/ai",
     images: ["https://picsum.photos/500/300?random=2"],
     createdAt: DateTime.now().subtract(const Duration(hours: 1)),
     likes: 348,
