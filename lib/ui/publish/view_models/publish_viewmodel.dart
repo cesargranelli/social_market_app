@@ -9,8 +9,11 @@ class PublishViewModel extends ChangeNotifier {
 
   final OfferRepository _offerRepository;
 
-  void addOffer(Offer offer) {
-    _offerRepository.createOffer(offer);
-    notifyListeners();
+  void addOffer(Offer offer) async {
+    try {
+      await _offerRepository.createOffer(offer);
+    } finally {
+      notifyListeners();
+    }
   }
 }

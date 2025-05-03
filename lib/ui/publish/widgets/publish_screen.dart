@@ -1,11 +1,12 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../domain/models/offer/offer.dart';
-import '../../offer/widgets/offer_image_picker.dart';
 import '../view_models/publish_viewmodel.dart';
 
 class PublishScreen extends StatefulWidget {
@@ -18,21 +19,32 @@ class PublishScreen extends StatefulWidget {
 }
 
 class _PublishScreenState extends State<PublishScreen> {
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController _textController = TextEditingController();
 
   bool isLoading = false;
 
+  Future<void> _pickImageFromGallery() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Compartilhe uma oferta"),
+        backgroundColor: Colors.amberAccent,
+        automaticallyImplyLeading: false,
+      ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.only(
-          left: 8.0,
-          right: 8.0,
-          top: 8.0,
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -51,10 +63,16 @@ class _PublishScreenState extends State<PublishScreen> {
                     child: const Icon(Icons.close, color: Colors.black),
                   ),
                   FloatingActionButton(
-                    onPressed: () {
-                      onButtonPublish();
-                    },
-                    backgroundColor: Colors.amberAccent,
+                    onPressed:
+                        (_textController.text.isEmpty || _selectedImage == null)
+                            ? null
+                            : () {
+                              onButtonPublish();
+                            },
+                    backgroundColor:
+                        (_textController.text.isEmpty || _selectedImage == null)
+                            ? Colors.amberAccent
+                            : Colors.grey[200],
                     child:
                         (isLoading)
                             ? const SizedBox(
@@ -77,24 +95,41 @@ class _PublishScreenState extends State<PublishScreen> {
                   hintText: "O que você encontrou de oferta hoje?",
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
+                textInputAction: TextInputAction.newline,
+                onChanged: (value) {
+                  setState(() {});
+                },
               ),
               const SizedBox(height: 16),
               Row(
+                children: [
+                  if (_selectedImage != null)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.file(
+                            _selectedImage!,
+                            width: double.infinity,
+                            height: 300,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  const SizedBox(height: 20),
                   FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => const OfferImagePicker(
-                                title: "Escolha uma imagem",
-                              ),
-                        ),
-                      );
-                    },
-                    backgroundColor: Colors.amberAccent,
+                    onPressed: () => _pickImageFromGallery(),
+                    backgroundColor:
+                        (_selectedImage == null)
+                            ? Colors.amberAccent
+                            : Colors.grey[200],
                     child: const Icon(Icons.photo, color: Colors.black),
                   ),
                   // FloatingActionButton(
@@ -137,18 +172,8 @@ class _PublishScreenState extends State<PublishScreen> {
         profileImageUrl:
             "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
         text: _textController.text,
-        images: [
-          "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
-        ],
+        images: [_selectedImage],
         createdAt: DateTime.now(),
-        category: 'categoria',
-        store: 'mercado',
-        address: 'local',
-        likes: 0,
-        retweets: 0,
-        comments: 0,
-        truth: 0,
-        bought: 0,
       );
 
       widget.viewModel.addOffer(offer);

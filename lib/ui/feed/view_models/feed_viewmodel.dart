@@ -1,20 +1,21 @@
+import 'package:flutter/material.dart';
+
 import '../../../data/repositories/offers/offer_repository.dart';
 import '../../../domain/models/offer/offer.dart';
 
-class FeedViewModel {
+class FeedViewModel extends ChangeNotifier {
   FeedViewModel({required OfferRepository offerRepository})
     : _offerRepository = offerRepository;
 
   final OfferRepository _offerRepository;
 
-  final List<Offer> _feedOffers = [];
-  List<Offer> get offers => _feedOffers;
-
-  void addOffer(Offer offer) {
-    _offerRepository.createOffer(offer);
-  }
-
-  Future<List<Offer>> getFeedOffers() {
-    return _offerRepository.fetchOffers();
+  Future<List<Offer>> getFeedOffers() async {
+    try {
+      var fetchOffers = await _offerRepository.fetchOffers();
+      fetchOffers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return fetchOffers;
+    } finally {
+      notifyListeners();
+    }
   }
 }

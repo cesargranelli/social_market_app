@@ -1,3 +1,5 @@
+import 'offer_rating.dart';
+
 class Offer {
   final String id;
   final String username;
@@ -9,11 +11,7 @@ class Offer {
   final String? category;
   final String? store;
   final String? address;
-  final int? likes;
-  final int? retweets;
-  final int? comments;
-  final int? truth;
-  final int? bought;
+  final OfferRating? ratings;
 
   Offer({
     required this.id,
@@ -26,11 +24,7 @@ class Offer {
     this.category,
     this.store,
     this.address,
-    this.likes,
-    this.retweets,
-    this.comments,
-    this.truth,
-    this.bought,
+    this.ratings,
   });
 
   Map<String, dynamic> toJson() {
@@ -45,11 +39,7 @@ class Offer {
       "category": category,
       "store": store,
       "address": address,
-      "likes": likes,
-      "retweets": retweets,
-      "comments": comments,
-      "truth": truth,
-      "bought": bought,
+      "ratings": ratings,
     };
   }
 
@@ -63,6 +53,12 @@ class Offer {
       images: json["images"],
       createdAt: DateTime.parse(json["createdAt"]),
       category: json["category"] as String? ?? "default",
+      address: json["address"] as String? ?? "default",
+      ratings:
+          json["ratings"] != null
+              ? OfferRating.fromJson(json["ratings"] as Map<String, dynamic>)
+              : null,
+      store: json["store"] as String? ?? "default",
     );
   }
 }
