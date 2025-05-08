@@ -2,10 +2,10 @@ import 'offer_who.dart';
 
 class OfferRating {
   late int? likes;
-  final int? purchases;
-  final int? verifications;
-  final int? replications;
-  final int? shares;
+  late int? purchases;
+  late int? verifications;
+  late int? replications;
+  late int? shares;
   late OfferWho? who;
 
   OfferRating({

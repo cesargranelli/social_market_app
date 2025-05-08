@@ -19,28 +19,24 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Rede de Ofertas")),
-      body: SafeArea(
-        top: true,
-        bottom: true,
-        child: FutureBuilder(
-          future: widget.viewModel.getFeedOffers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No offers available'));
-            }
-            return ListView.separated(
-              itemCount: snapshot.data!.length,
-              separatorBuilder: (context, index) => const Divider(height: 0),
-              itemBuilder: (context, index) {
-                return OfferItem(offer: snapshot.data![index]);
-              },
-            );
-          },
-        ),
+      body: StreamBuilder(
+        stream: widget.viewModel.getFeedOffers().asStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No offers available'));
+          }
+          return ListView.separated(
+            itemCount: snapshot.data!.length,
+            separatorBuilder: (context, index) => const Divider(height: 0),
+            itemBuilder: (context, index) {
+              return FeedItem(offer: snapshot.data![index]);
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(Routes.publish),

@@ -18,44 +18,41 @@ class FeedItemHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundImage: CachedNetworkImageProvider(imageProfile),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundImage: CachedNetworkImageProvider(imageProfile),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    username,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 4),
+                  const Spacer(),
+                  Text(
+                    timeago.format(createdAt, locale: 'pt_BR'),
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(userHandle, style: TextStyle(color: Colors.grey[600])),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      username,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 4),
-                    const Spacer(),
-                    Text(
-                      timeago.format(createdAt, locale: 'pt_BR'),
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(userHandle, style: TextStyle(color: Colors.grey[600])),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

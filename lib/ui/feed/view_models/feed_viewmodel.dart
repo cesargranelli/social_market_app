@@ -11,8 +11,8 @@ class FeedViewModel extends ChangeNotifier {
 
   Future<List<Offer>> getFeedOffers() async {
     try {
-      var fetchOffers = await _offerRepository.fetchOffers();
-      fetchOffers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final fetchOffers = await _offerRepository.fetchOffers();
+
       return fetchOffers;
     } finally {
       notifyListeners();
