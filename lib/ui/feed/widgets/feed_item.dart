@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '/ui/feed/view_models/feed_viewmodel.dart';
 import '../../../domain/models/offer/offer.dart';
-import '../../../domain/models/offer/offer_rating.dart';
 import 'sections/feed_item_header.dart';
 import 'sections/feed_item_image.dart';
 import 'sections/feed_item_reviews.dart';
 
 class FeedItem extends StatelessWidget {
-  const FeedItem({super.key, required this.offer});
+  const FeedItem({super.key, required this.offer, required this.viewModel});
 
   final Offer offer;
+  final FeedViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class FeedItem extends StatelessWidget {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: FeedItemReviews(offerRating: offer.ratings ?? OfferRating()),
+            child: FeedItemReviews(offer: offer, viewModel: viewModel),
           ),
           const SizedBox(height: 8),
         ],

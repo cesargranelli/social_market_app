@@ -1,3 +1,5 @@
+import 'package:social_market_app/domain/models/offer/offer_rating.dart';
+
 import '../../../domain/models/offer/offer.dart';
 import '../../services/api/offer_api.dart';
 import 'offer_repository.dart';
@@ -31,5 +33,20 @@ class OfferRepositoryRemote implements OfferRepository {
     // }
     final querySnapshot = await _offerApi.fetchOffers();
     return querySnapshot.docs.map((doc) => Offer.fromJson(doc.data())).toList();
+  }
+
+  @override
+  Future<void> updateOfferRating(
+    String offerId,
+    OfferRating offerRating,
+  ) async {
+    // final response = await _apiOfferProvider.put(
+    //   '/offers/$offerId/rating',
+    //   data: rating.toJson(),
+    // );
+    // if (response.statusCode != 200) {
+    //   throw Exception('Failed to update offer rating');
+    // }
+    return _offerApi.updateOfferRating(offerId, offerRating);
   }
 }

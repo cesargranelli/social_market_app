@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '/domain/models/offer/offer.dart';
+import '/domain/models/offer/offer_rating.dart';
 
 class OfferApiFirebase {
   OfferApiFirebase();
@@ -21,5 +22,11 @@ class OfferApiFirebase {
 
   Future<QuerySnapshot<Map<String, dynamic>>> fetchOffers() async {
     return await FirebaseFirestore.instance.collection("offers").get();
+  }
+
+  Future<void> updateOfferRating(String offerId, OfferRating rating) async {
+    await FirebaseFirestore.instance.collection("offers").doc(offerId).set({
+      "ratings": rating.toJson(),
+    });
   }
 }

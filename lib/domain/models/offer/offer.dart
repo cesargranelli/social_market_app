@@ -11,7 +11,7 @@ class Offer {
   final String? category;
   final String? store;
   final String? address;
-  final OfferRating? ratings;
+  late OfferRating ratings = OfferRating();
 
   Offer({
     required this.id,
@@ -21,10 +21,10 @@ class Offer {
     required this.text,
     required this.images,
     required this.createdAt,
+    required this.ratings,
     this.category,
     this.store,
     this.address,
-    this.ratings,
   });
 
   Map<String, dynamic> toJson() {
@@ -57,7 +57,7 @@ class Offer {
       ratings:
           json["ratings"] != null
               ? OfferRating.fromJson(json["ratings"] as Map<String, dynamic>)
-              : null,
+              : OfferRating(),
       store: json["store"] as String? ?? "default",
     );
   }

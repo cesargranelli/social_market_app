@@ -24,7 +24,7 @@ class OfferRating {
       "verifications": verifications,
       "replications": replications,
       "shares": shares,
-      "who": who,
+      "who": who?.toJson(),
     };
   }
 

@@ -33,7 +33,10 @@ class _FeedScreenState extends State<FeedScreen> {
             itemCount: snapshot.data!.length,
             separatorBuilder: (context, index) => const Divider(height: 0),
             itemBuilder: (context, index) {
-              return FeedItem(offer: snapshot.data![index]);
+              return FeedItem(
+                offer: snapshot.data![index],
+                viewModel: widget.viewModel,
+              );
             },
           );
         },
