@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
-import 'config/providers_remote.dart';
+import 'config/dependencies.dart';
 import 'firebase_options.dart';
 import 'social_market_app.dart';
 

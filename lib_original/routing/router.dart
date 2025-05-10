@@ -1,9 +1,9 @@
 import 'package:go_router/go_router.dart';
 
-import '/data/auth/auth_gate.dart';
-import '/data/repositories/offers/offer_repository_remote.dart';
-import '/data/services/api/offer_api.dart';
-import '../common/widgets/transition_slide.dart';
+import '../data/auth/auth_gate.dart';
+import '../data/repositories/offers/offer_repository_remote.dart';
+import '../data/services/api/offer_api.dart';
+import '../ui/core/ui/transition_slide.dart';
 import '../ui/feed/view_models/feed_viewmodel.dart';
 import '../ui/feed/widgets/feed_screen.dart';
 import '../ui/publish/view_models/publish_viewmodel.dart';

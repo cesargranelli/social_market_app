@@ -39,7 +39,7 @@ class Offer {
       "category": category,
       "store": store,
       "address": address,
-      "ratings": ratings.toJson(),
+      "ratings": ratings,
     };
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../domain/models/offer/offer.dart';
 import '/domain/models/offer/offer_rating.dart';
 import '/domain/models/offer/offer_who.dart';
+import '../../../../domain/models/offer/offer.dart';
 import '../../view_models/feed_viewmodel.dart';
 import '../components/interaction_button_reviews.dart';
 
@@ -35,8 +35,7 @@ class _FeedItemReviewsState extends State<FeedItemReviews> {
           onTap: () {
             if (_isLiked(widget.offer.ratings) == "likes") {
               widget.offer.ratings.who = null;
-              widget.offer.ratings.likes =
-                  (widget.offer.ratings.likes ?? 0) - 1;
+              widget.offer.ratings.likes = null;
             } else {
               widget.offer.ratings.purchases = null;
               widget.offer.ratings.replications = null;
@@ -58,101 +57,111 @@ class _FeedItemReviewsState extends State<FeedItemReviews> {
             setState(() {});
           },
         ),
-        // InteractionButtonReviews(
-        //   icon:
-        //       _isLiked(widget.offerRating) != "purchases"
-        //           ? Icons.add_shopping_cart
-        //           : Icons.shopping_cart,
-        //   amount: widget.offerRating.purchases ?? 0,
-        //   onTap: () {
-        //     if (_isLiked(widget.offerRating) == "purchases") {
-        //       widget.offerRating.who = null;
-        //       widget.offerRating.purchases =
-        //           (widget.offerRating.purchases ?? 0) - 1;
-        //     } else {
-        //       widget.offerRating.likes = null;
-        //       widget.offerRating.replications = null;
-        //       widget.offerRating.verifications = null;
-        //       // widget.offerRating.shares = null;
+        InteractionButtonReviews(
+          icon:
+              _isLiked(widget.offer.ratings) != "purchases"
+                  ? Icons.add_shopping_cart
+                  : Icons.shopping_cart,
+          amount: widget.offer.ratings.purchases ?? 0,
+          onTap: () {
+            if (_isLiked(widget.offer.ratings) == "purchases") {
+              widget.offer.ratings.who = null;
+              widget.offer.ratings.purchases = null;
+            } else {
+              widget.offer.ratings.likes = null;
+              widget.offer.ratings.replications = null;
+              widget.offer.ratings.verifications = null;
 
-        //       widget.offerRating.who = OfferWho(
-        //         username: "_nameController.text",
-        //         rating: "purchases",
-        //         createdAt: "createdAt",
-        //       );
-        //       widget.offerRating.purchases =
-        //           (widget.offerRating.purchases ?? 0) + 1;
-        //     }
-        //     setState(() {});
-        //   },
-        // ),
-        // InteractionButtonReviews(
-        //   icon:
-        //       _isLiked(widget.offerRating) != "verifications"
-        //           ? Icons.paid_outlined
-        //           : Icons.paid,
-        //   amount: widget.offerRating.verifications ?? 0,
-        //   onTap: () {
-        //     if (_isLiked(widget.offerRating) == "verifications") {
-        //       widget.offerRating.who = null;
-        //       widget.offerRating.verifications =
-        //           (widget.offerRating.verifications ?? 0) - 1;
-        //     } else {
-        //       widget.offerRating.likes = null;
-        //       widget.offerRating.replications = null;
-        //       widget.offerRating.purchases = null;
-        //       // widget.offerRating.shares = null;
+              widget.offer.ratings.who = OfferWho(
+                username: "_nameController.text",
+                rating: "purchases",
+                createdAt: "createdAt",
+              );
+              widget.offer.ratings.purchases =
+                  (widget.offer.ratings.purchases ?? 0) + 1;
+            }
 
-        //       widget.offerRating.who = OfferWho(
-        //         username: "_nameController.text",
-        //         rating: "verifications",
-        //         createdAt: "createdAt",
-        //       );
-        //       widget.offerRating.verifications =
-        //           (widget.offerRating.verifications ?? 0) + 1;
-        //     }
-        //     setState(() {});
-        //   },
-        // ),
-        // InteractionButtonReviews(
-        //   icon:
-        //       _isLiked(widget.offerRating) != "replications"
-        //           ? Icons.near_me_outlined
-        //           : Icons.near_me,
-        //   amount: widget.offerRating.replications ?? 0,
-        //   onTap: () {
-        //     if (_isLiked(widget.offerRating) == "replications") {
-        //       widget.offerRating.who = null;
-        //       widget.offerRating.replications =
-        //           (widget.offerRating.replications ?? 0) - 1;
-        //     } else {
-        //       widget.offerRating.likes = null;
-        //       widget.offerRating.verifications = null;
-        //       widget.offerRating.purchases = null;
-        //       // widget.offerRating.shares = null;
+            widget.viewModel.updateOfferRating(
+              widget.offer.id,
+              widget.offer.ratings,
+            );
+            setState(() {});
+          },
+        ),
+        InteractionButtonReviews(
+          icon:
+              _isLiked(widget.offer.ratings) != "verifications"
+                  ? Icons.paid_outlined
+                  : Icons.paid,
+          amount: widget.offer.ratings.verifications ?? 0,
+          onTap: () {
+            if (_isLiked(widget.offer.ratings) == "verifications") {
+              widget.offer.ratings.who = null;
+              widget.offer.ratings.verifications = null;
+            } else {
+              widget.offer.ratings.likes = null;
+              widget.offer.ratings.replications = null;
+              widget.offer.ratings.purchases = null;
 
-        //       widget.offerRating.who = OfferWho(
-        //         username: "_nameController.text",
-        //         rating: "replications",
-        //         createdAt: "createdAt",
-        //       );
-        //       widget.offerRating.replications =
-        //           (widget.offerRating.replications ?? 0) + 1;
-        //     }
-        //     setState(() {});
-        //   },
-        // ),
-        // InteractionButtonReviews(
-        //   icon:
-        //       widget.offerRating.shares == null
-        //           ? Icons.share_outlined
-        //           : Icons.share,
-        //   amount: widget.offerRating.shares ?? 0,
-        //   onTap: () {
-        //     widget.offerRating.shares = (widget.offerRating.shares ?? 0) + 1;
-        //     setState(() {});
-        //   },
-        // ),
+              widget.offer.ratings.who = OfferWho(
+                username: "_nameController.text",
+                rating: "verifications",
+                createdAt: "createdAt",
+              );
+              widget.offer.ratings.verifications =
+                  (widget.offer.ratings.verifications ?? 0) + 1;
+            }
+
+            widget.viewModel.updateOfferRating(
+              widget.offer.id,
+              widget.offer.ratings,
+            );
+            setState(() {});
+          },
+        ),
+        InteractionButtonReviews(
+          icon:
+              _isLiked(widget.offer.ratings) != "replications"
+                  ? Icons.near_me_outlined
+                  : Icons.near_me,
+          amount: widget.offer.ratings.replications ?? 0,
+          onTap: () {
+            if (_isLiked(widget.offer.ratings) == "replications") {
+              widget.offer.ratings.who = null;
+              widget.offer.ratings.replications = null;
+            } else {
+              widget.offer.ratings.likes = null;
+              widget.offer.ratings.verifications = null;
+              widget.offer.ratings.purchases = null;
+
+              widget.offer.ratings.who = OfferWho(
+                username: "_nameController.text",
+                rating: "replications",
+                createdAt: "createdAt",
+              );
+              widget.offer.ratings.replications =
+                  (widget.offer.ratings.replications ?? 0) + 1;
+            }
+
+            widget.viewModel.updateOfferRating(
+              widget.offer.id,
+              widget.offer.ratings,
+            );
+            setState(() {});
+          },
+        ),
+        InteractionButtonReviews(
+          icon:
+              widget.offer.ratings.shares == null
+                  ? Icons.share_outlined
+                  : Icons.share,
+          amount: widget.offer.ratings.shares ?? 0,
+          onTap: () {
+            widget.offer.ratings.shares =
+                (widget.offer.ratings.shares ?? 0) + 1;
+            setState(() {});
+          },
+        ),
       ],
     );
   }

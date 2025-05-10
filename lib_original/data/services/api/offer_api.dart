@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '/domain/models/offer/offer.dart';
-import '/domain/models/offer/offer_rating.dart';
+import '../../../domain/models/offer/offer.dart';
+import '../../../domain/models/offer/offer_rating.dart';
 
 class OfferApiFirebase {
   OfferApiFirebase();
@@ -17,10 +17,7 @@ class OfferApiFirebase {
     offer.images[0] = downloadURL;
 
     Map<String, dynamic> offerData = offer.toJson();
-    await FirebaseFirestore.instance
-        .collection("offers")
-        .doc(offer.id)
-        .set(offerData);
+    await FirebaseFirestore.instance.collection("offers").add(offerData);
   }
 
   Future<QuerySnapshot<Map<String, dynamic>>> fetchOffers() async {
@@ -28,7 +25,7 @@ class OfferApiFirebase {
   }
 
   Future<void> updateOfferRating(String offerId, OfferRating rating) async {
-    await FirebaseFirestore.instance.collection("offers").doc(offerId).update({
+    await FirebaseFirestore.instance.collection("offers").doc(offerId).set({
       "ratings": rating.toJson(),
     });
   }
