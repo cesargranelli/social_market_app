@@ -19,8 +19,8 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Rede de Ofertas")),
-      body: StreamBuilder(
-        stream: widget.viewModel.getFeedOffers().asStream(),
+      body: FutureBuilder(
+        future: widget.viewModel.getFeedOffers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -42,7 +42,9 @@ class _FeedScreenState extends State<FeedScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(Routes.publish),
+        onPressed: () {
+          context.push(Routes.publish);
+        },
         child: const Icon(Icons.electric_bolt_rounded, color: Colors.black),
       ),
     );

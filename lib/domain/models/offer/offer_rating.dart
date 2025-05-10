@@ -35,7 +35,7 @@ class OfferRating {
       verifications: json['verifications'] as int?,
       replications: json['replications'] as int?,
       shares: json['shares'] as int?,
-      who: json['who'],
+      who: json['who'] != null ? OfferWho.fromJson(json['who']) : null,
     );
   }
 }

@@ -6,12 +6,17 @@ import 'sections/feed_item_header.dart';
 import 'sections/feed_item_image.dart';
 import 'sections/feed_item_reviews.dart';
 
-class FeedItem extends StatelessWidget {
+class FeedItem extends StatefulWidget {
   const FeedItem({super.key, required this.offer, required this.viewModel});
 
   final Offer offer;
   final FeedViewModel viewModel;
 
+  @override
+  State<FeedItem> createState() => _FeedItemState();
+}
+
+class _FeedItemState extends State<FeedItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -23,25 +28,28 @@ class FeedItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: FeedItemHeader(
-              imageProfile: offer.profileImageUrl,
-              username: offer.username,
-              createdAt: offer.createdAt,
-              userHandle: offer.userHandle,
+              imageProfile: widget.offer.profileImageUrl,
+              username: widget.offer.username,
+              createdAt: widget.offer.createdAt,
+              userHandle: widget.offer.userHandle,
             ),
           ),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(offer.text),
+            child: Text(widget.offer.text),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: FeedItemImage(imageUrl: offer.images[0]),
+            child: FeedItemImage(imageUrl: widget.offer.images[0]),
           ),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: FeedItemReviews(offer: offer, viewModel: viewModel),
+            child: FeedItemReviews(
+              offer: widget.offer,
+              viewModel: widget.viewModel,
+            ),
           ),
           const SizedBox(height: 8),
         ],

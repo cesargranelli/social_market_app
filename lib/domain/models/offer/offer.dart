@@ -56,7 +56,7 @@ class Offer {
       address: json["address"] as String? ?? "default",
       ratings:
           json["ratings"] != null
-              ? OfferRating.fromJson(json["ratings"] as Map<String, dynamic>)
+              ? OfferRating.fromJson(json["ratings"])
               : OfferRating(),
       store: json["store"] as String? ?? "default",
     );
