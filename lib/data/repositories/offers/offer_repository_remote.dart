@@ -1,4 +1,4 @@
-import 'package:social_market_app/domain/models/offer/offer_rating.dart';
+import '../../../domain/models/offer/offer_rating.dart';
 
 import '../../../domain/models/offer/offer.dart';
 import '../../services/api/offer_api.dart';
@@ -24,13 +24,6 @@ class OfferRepositoryRemote implements OfferRepository {
 
   @override
   Future<List<Offer>> fetchOffers() async {
-    // final response = await _apiOfferProvider.get('/offers');
-    // if (response.statusCode == 200) {
-    //   final List<dynamic> data = response.data;
-    //   return data.map((json) => FeedOffer.fromJson(json)).toList();
-    // } else {
-    //   throw Exception('Failed to load offers');
-    // }
     final querySnapshot = await _offerApi.fetchOffers();
     return querySnapshot.docs.map((doc) => Offer.fromJson(doc.data())).toList();
   }

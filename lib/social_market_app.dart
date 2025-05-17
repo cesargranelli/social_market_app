@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'routing/router.dart';
 
@@ -22,8 +21,11 @@ class SocialMarketApp extends StatelessWidget {
           bodySmall: TextStyle(color: Colors.grey),
         ),
         iconTheme: const IconThemeData(color: Colors.grey),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        ),
       ),
-      routerConfig: router(context.read()),
+      routerConfig: router(),
     );
   }
 }

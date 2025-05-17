@@ -1,4 +1,4 @@
-import 'package:social_market_app/domain/models/offer/offer_rating.dart';
+import '../../../domain/models/offer/offer_rating.dart';
 
 import '/domain/models/offer/offer.dart';
 

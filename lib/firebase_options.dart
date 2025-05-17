@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '183973726892',
     projectId: 'social-market-54482',
     storageBucket: 'social-market-54482.firebasestorage.app',
+    iosClientId: '183973726892-nt3tr6878qli2qjtioptjgelom8crsi5.apps.googleusercontent.com',
     iosBundleId: 'com.example.socialMarketApp',
   );
 
