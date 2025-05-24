@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +24,7 @@ class _PublishScreenState extends State<PublishScreen> {
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _textController = TextEditingController();
+  final User? user = FirebaseAuth.instance.currentUser;
 
   bool isLoading = false;
 
@@ -170,8 +172,8 @@ class _PublishScreenState extends State<PublishScreen> {
 
       Offer offer = Offer(
         id: const Uuid().v4(),
-        username: "_nameController.text",
-        userHandle: '@UserHandle',
+        username: user?.email ?? "@Anonymous",
+        userHandle: user?.displayName ?? "Anônimo",
         profileImageUrl:
             "https://picsum.photos/500/300?random=${Random().nextInt(10)}",
         text: _textController.text,

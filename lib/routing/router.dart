@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '/data/repositories/offers/offer_repository_remote.dart';
@@ -9,29 +9,47 @@ import '../presentation/feed/widgets/feed_screen.dart';
 import '../presentation/login/widgets/login_screen.dart';
 import '../presentation/publish/view_models/publish_viewmodel.dart';
 import '../presentation/publish/widgets/publish_screen.dart';
+import '../presentation/screens/first_access_decision_screen.dart';
 import 'routes.dart';
 
-GoRouter router() => GoRouter(
-  redirect: (context, state) {
-    print("Current User: ${FirebaseAuth.instance.currentUser}");
-    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
-    final isTryingToAccessAuthRoute =
-        state.fullPath == Routes.login ||
-        state.fullPath == Routes.register ||
-        state.fullPath == Routes.forgot;
+// const String HAS_SEEN_WELCOME_SCREEN_KEY = 'hasSeenWelcomeScreen';
 
-    if (!isLoggedIn && !isTryingToAccessAuthRoute) {
-      return Routes.login;
-    }
-    if (isLoggedIn && isTryingToAccessAuthRoute) {
-      return Routes.feed;
-    }
+GoRouter router() => GoRouter(
+  navigatorKey: GlobalKey<NavigatorState>(),
+  initialLocation: "/",
+  redirect: (context, state) async {
+    // print("Current User: ${FirebaseAuth.instance.currentUser}");
+    // final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    // final isTryingToAccessAuthRoute =
+    //     state.fullPath == Routes.check ||
+    //     state.fullPath == Routes.login ||
+    //     state.fullPath == Routes.register ||
+    //     state.fullPath == Routes.forgot;
+    //
+    print("Path: ${state.fullPath}");
+    // print(!isLoggedIn && !isTryingToAccessAuthRoute);
+    // print(isLoggedIn && isTryingToAccessAuthRoute);
+
+    // if (!isLoggedIn && !isTryingToAccessAuthRoute) {
+    //   return Routes.check;
+    // }
+    // if (isLoggedIn && isTryingToAccessAuthRoute) {
+    //   return Routes.login;
+    // }
     return null;
   },
-  debugLogDiagnostics: true,
+  errorBuilder:
+      (context, state) => Scaffold(
+        appBar: AppBar(title: const Text("Erro")),
+        body: Center(child: Text("Página não encontrada: ${state.error}")),
+      ),
   routes: <RouteBase>[
     GoRoute(
-      path: Routes.login,
+      path: Routes.check,
+      builder: (context, state) => const FirstAccessDecisionScreen(),
+    ),
+    GoRoute(
+      path: Routes.signIn,
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           child: LoginScreen(),
