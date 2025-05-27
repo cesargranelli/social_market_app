@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '/data/repositories/offers/offer_repository_remote.dart';
-import '/data/services/api/offer_api.dart';
-import '../../commons/widgets/transition_slide.dart';
-import '../../ui/feed/view_models/feed_viewmodel.dart';
-import '../../ui/feed/widgets/feed_screen.dart';
-import '../../ui/screens/login_screen.dart';
-import '../../ui/publish/view_models/publish_viewmodel.dart';
-import '../../ui/publish/widgets/publish_screen.dart';
-import '../../ui/screens/first_access_decision_screen.dart';
+import '../data/repositories/offers/offer_repository_remote.dart';
+import '../data/services/api/offer_api.dart';
+import '../ui/widgets/transition_slide.dart';
+import '../ui/widgets/feed_viewmodel.dart';
+import '../ui/screens/feed_screen.dart';
+import '../ui/screens/login_screen.dart';
+import '../ui/view_models/publish_viewmodel.dart';
+import '../ui/screens/publish_screen.dart';
+import '../ui/screens/first_access_decision_screen.dart';
 import 'routes.dart';
 
 // const String HAS_SEEN_WELCOME_SCREEN_KEY = 'hasSeenWelcomeScreen';

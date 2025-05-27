@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/offer/offer.dart';
-import '../view_models/feed_viewmodel.dart';
-import 'sections/feed_item_header.dart';
-import 'sections/feed_item_image.dart';
-import 'sections/feed_item_reviews.dart';
+import '../../domain/models/offer/offer.dart';
+import 'feed_viewmodel.dart';
+import 'feed_item_header.dart';
+import 'feed_item_image.dart';
+import 'feed_item_reviews.dart';
 
 class FeedItem extends StatefulWidget {
   const FeedItem({super.key, required this.offer, required this.viewModel});

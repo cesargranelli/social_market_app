@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../config/themes/colors_app.dart';
+import 'ui/themes/colors_app.dart';
 import 'routing/router.dart';
 
 class SocialMarketApp extends StatelessWidget {

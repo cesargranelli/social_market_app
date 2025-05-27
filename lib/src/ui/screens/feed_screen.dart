@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../src/routing/routes.dart';
-import '../view_models/feed_viewmodel.dart';
-import 'feed_item.dart';
+import '../../routing/routes.dart';
+import '../widgets/feed_viewmodel.dart';
+import '../widgets/feed_item.dart';
 
 class FeedScreen extends StatefulWidget {
   final FeedViewModel viewModel;

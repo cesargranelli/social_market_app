@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '/domain/models/offer/offer_rating.dart';
-import '/domain/models/offer/offer_who.dart';
-import '../../../../domain/models/offer/offer.dart';
-import '../../view_models/feed_viewmodel.dart';
-import '../components/interaction_button_reviews.dart';
+import '../../domain/models/offer/offer_rating.dart';
+import '../../domain/models/offer/offer_who.dart';
+import '../../domain/models/offer/offer.dart';
+import 'feed_viewmodel.dart';
+import 'interaction_button_reviews.dart';
 
 class FeedItemReviews extends StatefulWidget {
   const FeedItemReviews({

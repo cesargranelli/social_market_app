@@ -3,8 +3,8 @@ import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../config/themes/colors_app.dart';
-import '../../src/routing/routes.dart';
+import '../themes/colors_app.dart';
+import '../../routing/routes.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
