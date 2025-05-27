@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 
-import 'config/providers_remote.dart';
+import 'config/providers/providers_remote.dart';
 import 'firebase_options.dart';
-import 'social_market_app.dart';
+import 'src/social_market_app.dart';
 
 void main() async {
   final logger = Logger('main');

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routing/routes.dart';
+import '../../../src/routing/routes.dart';
 import '../view_models/feed_viewmodel.dart';
 import 'feed_item.dart';
 

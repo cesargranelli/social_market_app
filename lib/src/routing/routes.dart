@@ -1,5 +1,5 @@
 abstract final class Routes {
-  static const check = "/";
+  static const first = "/";
   static const feed = "/feed";
   static const publish = "/publish";
   static const signIn = "/sign-in";

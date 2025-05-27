@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../src/routing/routes.dart';
 
 class FirstAccessDecisionScreen extends StatelessWidget {
   const FirstAccessDecisionScreen({super.key});
@@ -15,16 +18,9 @@ class FirstAccessDecisionScreen extends StatelessWidget {
     return Scaffold(
       body: Ink(
         padding: EdgeInsetsGeometry.symmetric(horizontal: 16.0),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFF4B4B), Color(0xFFFF6464)],
-          ),
-        ),
+        decoration: const BoxDecoration(color: Color(0xFFFF7622)),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             // spacing: 8.0,
             children: [
@@ -62,7 +58,7 @@ class FirstAccessDecisionScreen extends StatelessWidget {
                 ),
                 onTap: () {
                   _setHasSeenWelcomeScreen();
-                  // context.go(Routes.signIn);
+                  context.push(Routes.signIn);
                 },
               ),
               const SizedBox(height: 8.0),

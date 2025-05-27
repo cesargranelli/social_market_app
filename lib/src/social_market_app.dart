@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../config/themes/colors_app.dart';
 import 'routing/router.dart';
 
 class SocialMarketApp extends StatelessWidget {
@@ -9,7 +10,7 @@ class SocialMarketApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Social Market",
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorsApp.colorScheme,
         cardTheme: CardThemeData(
           elevation: 1,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
