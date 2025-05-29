@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../data/repositories/offers/offer_repository.dart';
-import '../../domain/models/offer/offer.dart';
-import '../../domain/models/offer/offer_rating.dart';
+import '../../data/repositories/offer_repository.dart';
+import '../../models/offer.dart';
+import '../../models/offer_rating.dart';
 
 class FeedViewModel extends ChangeNotifier {
   FeedViewModel({required OfferRepository offerRepository})

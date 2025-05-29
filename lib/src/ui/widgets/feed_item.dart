@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/models/offer/offer.dart';
+import '../../models/offer.dart';
 import 'feed_viewmodel.dart';
 import 'feed_item_header.dart';
 import 'feed_item_image.dart';

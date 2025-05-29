@@ -22,7 +22,6 @@ class FirstAccessDecisionScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            // spacing: 8.0,
             children: [
               const Spacer(),
               Icon(Icons.person_add_alt_1, size: 100, color: Colors.white),
@@ -67,7 +66,7 @@ class FirstAccessDecisionScreen extends StatelessWidget {
                   try {
                     FirebaseAuth.instance.signInAnonymously();
                     _setHasSeenWelcomeScreen();
-                    // context.go('/anonymous-home');
+                    context.push(Routes.anonymous);
                   } on FirebaseAuthException catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -95,7 +94,7 @@ class FirstAccessDecisionScreen extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   _setHasSeenWelcomeScreen();
-                  // context.go("/guest-dashboard");
+                  context.go(Routes.feed);
                 },
                 style: TextButton.styleFrom(foregroundColor: Colors.white70),
                 child: const Text(

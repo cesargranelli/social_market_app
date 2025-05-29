@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/models/offer/offer_rating.dart';
-import '../../domain/models/offer/offer_who.dart';
-import '../../domain/models/offer/offer.dart';
+import '../../models/offer_rating.dart';
+import '../../models/offer_who.dart';
+import '../../models/offer.dart';
 import 'feed_viewmodel.dart';
 import 'interaction_button_reviews.dart';
 

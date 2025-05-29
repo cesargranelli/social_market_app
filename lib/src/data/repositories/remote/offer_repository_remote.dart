@@ -1,8 +1,8 @@
-import '../../../domain/models/offer/offer_rating.dart';
+import '../../../models/offer_rating.dart';
 
-import '../../../domain/models/offer/offer.dart';
+import '../../../models/offer.dart';
 import '../../services/api/offer_api.dart';
-import 'offer_repository.dart';
+import '../offer_repository.dart';
 
 class OfferRepositoryRemote implements OfferRepository {
   OfferRepositoryRemote({required OfferApiFirebase offerApi})

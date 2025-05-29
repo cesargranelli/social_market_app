@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/offer/offer.dart';
-import '../../../domain/models/offer/offer_rating.dart';
+import '../../../models/offer.dart';
+import '../../../models/offer_rating.dart';
 
 class OfferApiFirebase extends ChangeNotifier {
   OfferApiFirebase();

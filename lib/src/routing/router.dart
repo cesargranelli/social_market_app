@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../data/repositories/offers/offer_repository_remote.dart';
+import '../data/repositories/remote/offer_repository_remote.dart';
 import '../data/services/api/offer_api.dart';
-import '../ui/widgets/transition_slide.dart';
-import '../ui/widgets/feed_viewmodel.dart';
+import '../ui/screens/anonymous_screen.dart';
 import '../ui/screens/feed_screen.dart';
-import '../ui/screens/login_screen.dart';
-import '../ui/view_models/publish_viewmodel.dart';
-import '../ui/screens/publish_screen.dart';
 import '../ui/screens/first_access_decision_screen.dart';
+import '../ui/screens/publish_screen.dart';
+import '../ui/screens/signin_app_screen.dart';
+import '../ui/view_models/publish_viewmodel.dart';
+import '../ui/widgets/feed_viewmodel.dart';
+import '../ui/widgets/transition_slide.dart';
 import 'routes.dart';
 
 // const String HAS_SEEN_WELCOME_SCREEN_KEY = 'hasSeenWelcomeScreen';
@@ -52,7 +53,7 @@ GoRouter router() => GoRouter(
       path: Routes.signIn,
       pageBuilder: (context, state) {
         return CustomTransitionPage(
-          child: LoginScreen(),
+          child: SignInAppScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return TransitionSlide(
               animation: animation,
@@ -98,6 +99,22 @@ GoRouter router() => GoRouter(
             return TransitionSlide(
               animation: animation,
               direction: TransitionSlide.downUp,
+              child: child,
+            );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: Routes.anonymous,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: AnonymousScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return TransitionSlide(
+              animation: animation,
+              direction: TransitionSlide.rightLeft,
               child: child,
             );
           },

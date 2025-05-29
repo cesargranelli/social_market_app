@@ -6,4 +6,5 @@ abstract final class Routes {
   static const signOut = "/sign-out";
   static const register = "/register";
   static const forgot = "/forgot-password";
+  static const anonymous = "/anonymous";
 }

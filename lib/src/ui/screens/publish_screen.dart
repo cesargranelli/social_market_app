@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../domain/models/offer/offer.dart';
-import '../../domain/models/offer/offer_rating.dart';
+import '../../models/offer.dart';
+import '../../models/offer_rating.dart';
 import '../view_models/publish_viewmodel.dart';
 
 class PublishScreen extends StatefulWidget {

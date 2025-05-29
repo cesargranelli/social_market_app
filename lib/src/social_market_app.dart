@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'ui/themes/colors_app.dart';
 import 'routing/router.dart';
+import 'ui/themes/colors_app.dart';
 
 class SocialMarketApp extends StatelessWidget {
   @override
@@ -40,10 +40,7 @@ class SocialMarketApp extends StatelessWidget {
           ),
         ),
         textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white70,
-            textStyle: const TextStyle(fontSize: 16),
-          ),
+          style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 16)),
         ),
       ),
       routerConfig: router(),

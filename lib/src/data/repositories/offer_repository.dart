@@ -1,6 +1,5 @@
-import '../../../domain/models/offer/offer_rating.dart';
-
-import '../../../domain/models/offer/offer.dart';
+import '../../models/offer.dart';
+import '../../models/offer_rating.dart';
 
 abstract class OfferRepository {
   Future<List<Offer>> fetchOffers();
