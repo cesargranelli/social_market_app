@@ -1,71 +1,55 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routing/routes.dart';
 
 class FirstAccessDecisionScreen extends StatelessWidget {
   const FirstAccessDecisionScreen({super.key});
 
-  Future<void> _setHasSeenWelcomeScreen() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('hasSeenWelcomeScreen', true);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Ink(
+      body: Container(
         padding: EdgeInsetsGeometry.symmetric(horizontal: 16.0),
-        decoration: const BoxDecoration(color: Color(0xFFFF7622)),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              Icon(Icons.person_add_alt_1, size: 100, color: Colors.white),
+              Icon(
+                Icons.person_add_alt_1,
+                size: 100,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 8.0),
               Text(
                 "Bem vindo ao Rede de Ofertas!",
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 40.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8.0),
-              const Text(
-                "Escolha como você quer prosseguir:",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, color: Colors.white70),
-              ),
               const Spacer(),
-              InkWell(
-                borderRadius: BorderRadius.circular(50),
-                child: Ink(
-                  height: 100,
-                  width: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.white,
-                  ),
-                  child: Center(
-                    child: Text("Me Cadastrar", style: TextStyle(fontSize: 20)),
-                  ),
-                ),
-                onTap: () {
-                  _setHasSeenWelcomeScreen();
+              FilledButton(
+                onPressed: () {
                   context.push(Routes.signIn);
                 },
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                ),
+                child: const Text(
+                  "Me Cadastrar",
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 16.0),
               OutlinedButton(
                 onPressed: () {
                   try {
                     FirebaseAuth.instance.signInAnonymously();
-                    _setHasSeenWelcomeScreen();
                     context.push(Routes.anonymous);
                   } on FirebaseAuthException catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -78,8 +62,6 @@ class FirstAccessDecisionScreen extends StatelessWidget {
                   }
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white),
-                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(32.0),
@@ -90,13 +72,11 @@ class FirstAccessDecisionScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              const SizedBox(height: 8.0),
-              TextButton(
+              const SizedBox(height: 16.0),
+              ElevatedButton(
                 onPressed: () {
-                  _setHasSeenWelcomeScreen();
                   context.go(Routes.feed);
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.white70),
                 child: const Text(
                   "Explorar como Visitante",
                   style: TextStyle(fontSize: 16),
