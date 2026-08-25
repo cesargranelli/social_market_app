@@ -8,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../offers/presentation/offers_shell.dart';
 import '../../profile/data/user_repository.dart';
-import 'home_screen.dart';
 
 class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
@@ -51,7 +51,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         }
         _ensureUserDocument(user);
 
-        return const HomeScreen();
+        return const OffersShell();
       },
     );
   }
