@@ -23,6 +23,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/dash.png
-    - assets/flutterfire_300x.png

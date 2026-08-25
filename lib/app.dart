@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'auth_gate.dart';
+import 'core/theme.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SocialMarketApp extends StatelessWidget {
+  const SocialMarketApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      title: 'Social Market',
+      debugShowCheckedModeBanner: false,
+      theme: appTheme,
       home: const AuthGate(),
     );
   }

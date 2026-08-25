@@ -3,6 +3,7 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
 
+import 'core/config.dart';
 import 'home.dart';
 
 class AuthGate extends StatelessWidget {
@@ -17,17 +18,20 @@ class AuthGate extends StatelessWidget {
           return SignInScreen(
             providers: [
               EmailAuthProvider(),
-              GoogleProvider(
-                clientId:
-                    "183973726892-7q9f4gbqi97mic6bm0udvmgpo8qe81g4.apps.googleusercontent.com",
-              ),
+              GoogleProvider(clientId: googleClientId),
             ],
             headerBuilder: (context, constraints, shrinkOffset) {
               return Padding(
                 padding: const EdgeInsets.all(20),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Image.asset('assets/flutterfire_300x.png'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.local_offer, size: 96),
+                    Text(
+                      'Social Market',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ],
                 ),
               );
             },
@@ -36,15 +40,17 @@ class AuthGate extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child:
                     action == AuthAction.signIn
-                        ? const Text('Welcome to FlutterFire, please sign in!')
-                        : const Text('Welcome to Flutterfire, please sign up!'),
+                        ? const Text(
+                          'Bem-vindo ao Social Market! Entre para economizar.',
+                        )
+                        : const Text('Crie sua conta no Social Market!'),
               );
             },
             footerBuilder: (context, action) {
               return const Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: Text(
-                  'By signing in, you agree to our terms and conditions.',
+                  'Ao entrar, você concorda com nossos termos de uso.',
                   style: TextStyle(color: Colors.grey),
                 ),
               );
@@ -52,9 +58,15 @@ class AuthGate extends StatelessWidget {
             sideBuilder: (context, shrinkOffset) {
               return Padding(
                 padding: const EdgeInsets.all(20),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Image.asset('flutterfire_300x.png'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.local_offer, size: 96),
+                    Text(
+                      'Social Market',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ],
                 ),
               );
             },

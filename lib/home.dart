@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute<ProfileScreen>(
                   builder:
                       (context) => ProfileScreen(
-                        appBar: AppBar(title: const Text('User Profile')),
+                        appBar: AppBar(title: const Text('Perfil')),
                         actions: [
                           SignedOutAction((context) {
                             Navigator.of(context).pop();
@@ -27,9 +27,12 @@ class HomeScreen extends StatelessWidget {
                           const Divider(),
                           Padding(
                             padding: const EdgeInsets.all(2),
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: Image.asset('flutterfire_300x.png'),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.local_offer),
+                                Text('Social Market'),
+                              ],
                             ),
                           ),
                         ],
@@ -43,9 +46,11 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('dash.png'),
-            Text('Welcome!', style: Theme.of(context).textTheme.displaySmall),
+            const Icon(Icons.local_offer),
+            const Text('Social Market'),
+            Text('Bem-vindo!', style: Theme.of(context).textTheme.displaySmall),
             const SignOutButton(),
           ],
         ),
