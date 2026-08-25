@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,9 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:social_market_app/core/providers/firebase_providers.dart';
 import 'package:social_market_app/core/theme.dart';
+import 'package:social_market_app/features/offers/data/offer_interaction_repository.dart';
 import 'package:social_market_app/features/offers/data/offer_repository.dart';
+import 'package:social_market_app/features/offers/domain/offer_comment.dart';
 import 'package:social_market_app/features/offers/domain/offer_model.dart';
 import 'package:social_market_app/features/profile/data/user_repository.dart';
 import 'package:social_market_app/features/profile/domain/user_model.dart';
@@ -21,10 +25,16 @@ class FakeOfferRepository implements OfferRepository {
   final List<OfferModel> createdOffers = <OfferModel>[];
   final List<String> uploadedImagePaths = <String>[];
 
+  /// Ofertas devolvidas por [watchRecent] e [getById] (configuráveis por
+  /// teste antes do pumpWidget).
+  List<OfferModel> recentOffers = const <OfferModel>[];
+  Map<String, OfferModel> offersById = const <String, OfferModel>{};
+
   /// Erro (se definido) lançado pela próxima chamada correspondente,
   /// simulando falhas de rede/Firebase nos testes.
   Object? createOfferError;
   Object? uploadOfferError;
+  Object? watchRecentError;
 
   int _nextId = 1;
 
@@ -48,17 +58,170 @@ class FakeOfferRepository implements OfferRepository {
 
   @override
   Stream<List<OfferModel>> watchRecent({String? storeId, int limit = 50}) {
-    return Stream.value(const <OfferModel>[]);
+    final Object? error = watchRecentError;
+    if (error != null) return Stream<List<OfferModel>>.error(error);
+    return Stream<List<OfferModel>>.value(
+      List<OfferModel>.of(recentOffers.take(limit)),
+    );
   }
 
   @override
-  Future<OfferModel?> getById(String id) async => null;
+  Future<OfferModel?> getById(String id) async => offersById[id];
 
   @override
   Future<void> markExpired(String id) async {}
 
   @override
   Future<void> deleteOffer(String id) async {}
+}
+
+/// Fake leve de [OfferInteractionRepository]: mantém estado interno de
+/// curtidas/comentários e emite atualizações pelos streams, como o
+/// Firestore faria. Chamadas e erros são registrados/forçáveis nos testes.
+///
+/// Limitação assumida: `hasLiked` emite apenas o estado do usuário atual
+/// ([currentUid]) — suficiente para os widget tests.
+class FakeOfferInteractionRepository implements OfferInteractionRepository {
+  FakeOfferInteractionRepository({
+    this.currentUid = 'uid-1',
+    this.currentUserName = 'Maria Silva',
+  });
+
+  final String currentUid;
+  final String currentUserName;
+
+  final List<({String offerId, bool liked})> toggleLikeCalls =
+      <({String offerId, bool liked})>[];
+  final List<({String offerId, String text})> addCommentCalls =
+      <({String offerId, String text})>[];
+
+  Object? toggleLikeError;
+  Object? addCommentError;
+
+  final Map<String, Set<String>> _likedBy = <String, Set<String>>{};
+  final Map<String, int> _likeCounts = <String, int>{};
+  final Map<String, List<OfferComment>> _comments =
+      <String, List<OfferComment>>{};
+
+  final Map<String, List<StreamController<int>>> _countSubscribers =
+      <String, List<StreamController<int>>>{};
+  final Map<String, List<StreamController<bool>>> _hasLikedSubscribers =
+      <String, List<StreamController<bool>>>{};
+  final Map<String, List<StreamController<List<OfferComment>>>>
+  _commentSubscribers =
+      <String, List<StreamController<List<OfferComment>>>>{};
+
+  int _nextCommentId = 1;
+
+  /// Semeia o estado inicial de uma oferta (chamar ANTES do pumpWidget).
+  void seed({
+    required String offerId,
+    int likeCount = 0,
+    bool likedByCurrentUser = false,
+    List<OfferComment> comments = const <OfferComment>[],
+  }) {
+    _likeCounts[offerId] = likeCount;
+    final Set<String> liked = _likedBy.putIfAbsent(offerId, () => <String>{});
+    if (likedByCurrentUser) liked.add(currentUid);
+    _comments[offerId] = List<OfferComment>.of(comments);
+  }
+
+  @override
+  Future<bool> toggleLike(String offerId) async {
+    final Object? error = toggleLikeError;
+    if (error != null) throw error;
+
+    final Set<String> liked = _likedBy.putIfAbsent(offerId, () => <String>{});
+    bool nowLiked;
+    if (liked.contains(currentUid)) {
+      liked.remove(currentUid);
+      nowLiked = false;
+      _likeCounts[offerId] = (_likeCounts[offerId] ?? 1) - 1;
+    } else {
+      liked.add(currentUid);
+      nowLiked = true;
+      _likeCounts[offerId] = (_likeCounts[offerId] ?? 0) + 1;
+    }
+    toggleLikeCalls.add((offerId: offerId, liked: nowLiked));
+
+    for (final StreamController<bool> controller
+        in _hasLikedSubscribers[offerId] ?? const <StreamController<bool>>[]) {
+      controller.add(nowLiked);
+    }
+    for (final StreamController<int> controller
+        in _countSubscribers[offerId] ?? const <StreamController<int>>[]) {
+      controller.add(_likeCounts[offerId] ?? 0);
+    }
+    return nowLiked;
+  }
+
+  @override
+  Stream<int> watchLikesCount(String offerId) {
+    final StreamController<int> controller = StreamController<int>();
+    controller.add(_likeCounts[offerId] ?? 0);
+    _countSubscribers.putIfAbsent(offerId, () => <StreamController<int>>[])
+        .add(controller);
+    return controller.stream;
+  }
+
+  @override
+  Stream<bool> hasLiked(String offerId, String uid) {
+    final StreamController<bool> controller = StreamController<bool>();
+    controller.add(
+      (_likedBy[offerId] ?? const <String>{}).contains(currentUid),
+    );
+    _hasLikedSubscribers
+        .putIfAbsent(offerId, () => <StreamController<bool>>[])
+        .add(controller);
+    return controller.stream;
+  }
+
+  @override
+  Future<void> addComment(String offerId, String text) async {
+    final Object? error = addCommentError;
+    if (error != null) throw error;
+
+    final String trimmed = text.trim();
+    if (trimmed.isEmpty) {
+      throw ArgumentError.value(text, 'text', 'Comentário não pode ser vazio');
+    }
+    if (trimmed.length > 500) {
+      throw ArgumentError.value(
+        text,
+        'text',
+        'Comentário deve ter no máximo 500 caracteres',
+      );
+    }
+
+    addCommentCalls.add((offerId: offerId, text: trimmed));
+    final OfferComment comment = OfferComment(
+      id: 'comment-${_nextCommentId++}',
+      uid: currentUid,
+      authorName: currentUserName,
+      text: trimmed,
+      createdAt: DateTime.now(),
+    );
+    _comments
+        .putIfAbsent(offerId, () => <OfferComment>[])
+        .add(comment);
+
+    for (final StreamController<List<OfferComment>> controller
+        in _commentSubscribers[offerId] ??
+            const <StreamController<List<OfferComment>>>[]) {
+      controller.add(List<OfferComment>.unmodifiable(_comments[offerId]!));
+    }
+  }
+
+  @override
+  Stream<List<OfferComment>> watchComments(String offerId) {
+    final StreamController<List<OfferComment>> controller =
+        StreamController<List<OfferComment>>();
+    controller.add(List<OfferComment>.unmodifiable(_comments[offerId] ?? const <OfferComment>[]));
+    _commentSubscribers
+        .putIfAbsent(offerId, () => <StreamController<List<OfferComment>>>[])
+        .add(controller);
+    return controller.stream;
+  }
 }
 
 class FakeStoreRepository implements StoreRepository {
@@ -148,13 +311,14 @@ class FakeUserRepository implements UserRepository {
 
 /// Harness com os overrides padrão dos widget tests da Fase 3.
 ///
-/// Simula um usuário autenticado (uid `uid-1`), um perfil com pontos e um
-/// catálogo opcional de mercados.
+/// Simula um usuário autenticado (uid `uid-1`), um perfil com pontos, um
+/// catálogo opcional de mercados e um repositório de interações fake.
 class Phase3TestHarness {
   Phase3TestHarness({
     MockUser? user,
     UserModel? profile,
     List<StoreModel> seedStores = const <StoreModel>[],
+    FakeOfferInteractionRepository? interactions,
   }) : mockUser =
            user ??
            (MockUser(
@@ -164,7 +328,9 @@ class Phase3TestHarness {
            )),
        offersRepository = FakeOfferRepository(),
        storesRepository = FakeStoreRepository(stores: seedStores),
-       userRepository = FakeUserRepository() {
+       userRepository = FakeUserRepository(),
+       interactionsRepository =
+           interactions ?? FakeOfferInteractionRepository() {
     userProfile =
         profile ??
         UserModel(
@@ -184,11 +350,18 @@ class Phase3TestHarness {
   final FakeOfferRepository offersRepository;
   final FakeStoreRepository storesRepository;
   final FakeUserRepository userRepository;
+  final FakeOfferInteractionRepository interactionsRepository;
 
   /// Constrói o app de teste já envolto em [ProviderScope] com todos os
   /// overrides aplicados (o tipo dos elementos é inferido pelo contexto,
   /// pois `Override` não é exportado publicamente no Riverpod 3.x).
   Widget buildTestApp({required Widget home}) {
+    return wrapWithScope(child: MaterialApp(theme: appTheme, home: home));
+  }
+
+  /// Envolve [child] apenas no [ProviderScope] com os overrides do harness
+  /// — útil com `MaterialApp.router`/`GoRouter` nos testes de navegação.
+  Widget wrapWithScope({required Widget child}) {
     return ProviderScope(
       overrides: [
         firebaseAuthProvider.overrideWithValue(mockAuth),
@@ -196,10 +369,13 @@ class Phase3TestHarness {
           (ref) => Stream<User?>.value(mockAuth.currentUser),
         ),
         offerRepositoryProvider.overrideWithValue(offersRepository),
+        offerInteractionRepositoryProvider.overrideWithValue(
+          interactionsRepository,
+        ),
         storeRepositoryProvider.overrideWithValue(storesRepository),
         userRepositoryProvider.overrideWithValue(userRepository),
       ],
-      child: MaterialApp(theme: appTheme, home: home),
+      child: child,
     );
   }
 }

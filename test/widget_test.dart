@@ -25,8 +25,12 @@ void main() {
     );
     expect(navBar.items, hasLength(3));
 
-    // Placeholder elegante no lugar do antigo HomeScreen.
-    expect(find.text('Feed de ofertas em breve!'), findsOneWidget);
+    // Feed real no lugar do antigo placeholder (fake sem ofertas -> empty state).
+    expect(find.text('Nenhuma oferta publicada ainda.'), findsOneWidget);
+    expect(
+      find.text('Seja o primeiro a compartilhar uma promoção!'),
+      findsOneWidget,
+    );
     expect(find.byIcon(Icons.storefront), findsAtLeastNWidgets(1));
   });
 

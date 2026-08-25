@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:social_market_app/features/offers/domain/offer_comment.dart';
 import 'package:social_market_app/features/offers/domain/offer_model.dart';
 import 'package:social_market_app/features/profile/domain/points_log_entry.dart';
 import 'package:social_market_app/features/profile/domain/user_model.dart';
@@ -115,6 +116,8 @@ void main() {
       });
 
       expect(restored.unit, 'un');
+      expect(restored.storeName, '');
+      expect(restored.authorName, '');
       expect(restored.confirmCount, 0);
       expect(restored.status, OfferStatus.active);
       expect(restored.regularPrice, isNull);
@@ -147,6 +150,57 @@ void main() {
         buildOffer().copyWith(status: OfferStatus.expired).isExpired,
         isTrue,
       );
+    });
+
+    test('toMap SEMPRE inclui storeName/authorName e roundtrip preserva', () {
+      final offer = buildOffer()
+          .copyWith(storeName: 'Mercado Central', authorName: 'Ana');
+
+      final map = offer.toMap();
+      expect(map.containsKey('storeName'), isTrue);
+      expect(map.containsKey('authorName'), isTrue);
+
+      final restored = OfferModel.fromMap(offer.id!, map);
+      expect(restored.storeName, 'Mercado Central');
+      expect(restored.authorName, 'Ana');
+      expect(restored, offer);
+    });
+
+    test('copyWith altera somente storeName/authorName informados', () {
+      final base = buildOffer();
+      final updated = base.copyWith(storeName: 'Bom Preço');
+
+      expect(updated.storeName, 'Bom Preço');
+      expect(updated.authorName, base.authorName);
+      expect(updated.productName, base.productName);
+    });
+  });
+
+  group('OfferComment', () {
+    test('roundtrip toMap/fromMap preserva campos', () {
+      final comment = OfferComment(
+        id: 'c1',
+        uid: 'u1',
+        authorName: 'Ana',
+        text: 'Ótima oferta!',
+        createdAt: fixedDate,
+      );
+
+      final restored = OfferComment.fromMap(comment.id!, comment.toMap());
+
+      expect(restored, comment);
+      expect(restored.uid, 'u1');
+      expect(restored.authorName, 'Ana');
+      expect(restored.text, 'Ótima oferta!');
+      expect(restored.createdAt, fixedDate);
+    });
+
+    test('fromMap tolera campos ausentes com defaults', () {
+      final minimal = OfferComment.fromMap('c2', {'text': 'Oi'});
+
+      expect(minimal.uid, '');
+      expect(minimal.authorName, '');
+      expect(minimal.createdAt, isNull);
     });
   });
 

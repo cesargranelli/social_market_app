@@ -50,8 +50,12 @@ void main() {
       <String?>['Ofertas', 'Nova Oferta', 'Perfil'],
     );
 
-    // Conteúdo inicial: placeholder elegante do feed.
-    expect(find.text('Feed de ofertas em breve!'), findsOneWidget);
+    // Conteúdo inicial: feed real com empty state (o fake não tem ofertas).
+    expect(find.text('Nenhuma oferta publicada ainda.'), findsOneWidget);
+    expect(
+      find.text('Seja o primeiro a compartilhar uma promoção!'),
+      findsOneWidget,
+    );
     expect(find.byIcon(Icons.storefront), findsAtLeastNWidgets(1));
 
     // Rótulos das abas presentes.
