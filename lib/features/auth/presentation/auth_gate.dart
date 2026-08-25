@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +8,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../profile/data/user_repository.dart';
 import 'home_screen.dart';
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  final Set<String> _ensuredUids = <String>{};
+
+  void _ensureUserDocument(User user) {
+    if (!_ensuredUids.add(user.uid)) return;
+    unawaited(_runEnsureUserDocument(user));
+  }
+
+  Future<void> _runEnsureUserDocument(User user) async {
+    try {
+      await ref.read(userRepositoryProvider).ensureUserDocument(user);
+    } catch (_) {
+      if (mounted) _ensuredUids.remove(user.uid);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authStateChangesProvider);
 
     return authState.when(
@@ -25,6 +49,7 @@ class AuthGate extends ConsumerWidget {
         if (user == null) {
           return _buildSignInScreen(context);
         }
+        _ensureUserDocument(user);
 
         return const HomeScreen();
       },
