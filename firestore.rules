@@ -27,8 +27,12 @@ service cloud.firestore {
 
     match /offers/{offerId} {
       function offerUpdateValid() {
+        // Comparação segura para campo opcional: OfferModel.toMap() omite
+        // expiresAt quando nulo, e acesso direto a chave inexistente em rules
+        // gera erro (negaria TODA atualização, inclusive markExpired).
         return request.resource.data.confirmCount == resource.data.confirmCount
-          && request.resource.data.expiresAt == resource.data.expiresAt
+          && request.resource.data.get('expiresAt', null)
+            == resource.data.get('expiresAt', null)
           && (
             request.resource.data.status == resource.data.status
             || (resource.data.status == 'active'
@@ -57,7 +61,11 @@ service cloud.firestore {
       allow create: if isSignedIn()
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.name is string
-        && request.resource.data.name.size() > 0;
+        && request.resource.data.name.size() > 0
+        // Alinhado às telas/repos: a busca por mercados filtra por cidade,
+        // então uma store sem cidade inviabilizaria searchByName.
+        && request.resource.data.city is string
+        && request.resource.data.city.size() > 0;
       allow update, delete: if false;
     }
   }

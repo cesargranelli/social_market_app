@@ -21,17 +21,28 @@ class FakeOfferRepository implements OfferRepository {
   final List<OfferModel> createdOffers = <OfferModel>[];
   final List<String> uploadedImagePaths = <String>[];
 
+  /// Erro (se definido) lançado pela próxima chamada correspondente,
+  /// simulando falhas de rede/Firebase nos testes.
+  Object? createOfferError;
+  Object? uploadOfferError;
+
   int _nextId = 1;
 
   @override
   Future<String> createOffer(OfferModel offer) async {
+    final Object? error = createOfferError;
+    if (error != null) throw error;
     createdOffers.add(offer);
     return 'offer-${_nextId++}';
   }
 
   @override
   Future<String> uploadOfferImage(String path, XFile file) async {
+    // Registra a TENTATIVA mesmo quando falha (permite afirmar que o upload
+    // foi acionado antes do erro simulado).
     uploadedImagePaths.add(path);
+    final Object? error = uploadOfferError;
+    if (error != null) throw error;
     return 'https://example.com/$path';
   }
 
@@ -57,10 +68,15 @@ class FakeStoreRepository implements StoreRepository {
   final List<StoreModel> _stores;
   final List<StoreModel> createdStores = <StoreModel>[];
 
+  /// Registra cada chamada EFETIVA de busca no formato 'cidade|termo'.
+  /// Se a tela validar antes de consultar, esta lista permanece vazia.
+  final List<String> searchCalls = <String>[];
+
   int _nextId = 1;
 
   @override
   Future<List<StoreModel>> searchByName(String city, String query) async {
+    searchCalls.add('$city|$query');
     final String term = query.trim().toLowerCase();
     if (term.isEmpty) return const <StoreModel>[];
 

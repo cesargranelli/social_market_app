@@ -17,10 +17,15 @@ import '../domain/offer_model.dart';
 /// inline) -> publicar. O upload da imagem acontece ANTES de criar o
 /// documento da oferta; qualquer falha resulta em SnackBar amigável.
 class NewOfferScreen extends ConsumerStatefulWidget {
-  const NewOfferScreen({super.key, this.onOfferSaved});
+  const NewOfferScreen({super.key, this.onOfferSaved, this.imagePicker});
 
   /// Invocado após publicar com sucesso (ex.: voltar à aba de feed).
   final VoidCallback? onOfferSaved;
+
+  /// Picker injetável para testes automatizados (o plugin real depende de
+  /// canal de plataforma indisponível no ambiente de teste). Em produção,
+  /// permanece nulo e um [ImagePicker] padrão é criado.
+  final ImagePicker? imagePicker;
 
   @override
   ConsumerState<NewOfferScreen> createState() => _NewOfferScreenState();
@@ -43,7 +48,8 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
       TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _storeSearchController = TextEditingController();
-  final ImagePicker _imagePicker = ImagePicker();
+
+  late final ImagePicker _imagePicker;
 
   String _unit = 'un';
   StoreModel? _selectedStore;
@@ -52,6 +58,12 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
   bool _hasSearched = false;
   XFile? _imageFile;
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagePicker = widget.imagePicker ?? ImagePicker();
+  }
 
   @override
   void dispose() {
