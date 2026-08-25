@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:go_router/go_router.dart';
+
+import 'helpers/fake_repositories.dart';
 import 'package:social_market_app/core/router/app_router.dart';
 import 'package:social_market_app/core/theme.dart';
-import 'package:social_market_app/features/auth/presentation/home_screen.dart';
+import 'package:social_market_app/features/offers/presentation/offers_shell.dart';
 
 void main() {
-  testWidgets('HomeScreen exibe marca, boas-vindas e ações principais', (
+  testWidgets('OffersShell exibe três abas e o conteúdo inicial da aba Ofertas', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(theme: appTheme, home: const HomeScreen()),
+    final Phase3TestHarness harness = Phase3TestHarness();
+
+    await tester.pumpWidget(harness.buildTestApp(home: const OffersShell()));
+    await tester.pump();
+    await tester.pump();
+
+    // Navegação inferior com três abas.
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    final BottomNavigationBar navBar = tester.widget<BottomNavigationBar>(
+      find.byType(BottomNavigationBar),
     );
+    expect(navBar.items, hasLength(3));
 
-    // Marca (ícone + nome).
-    expect(find.byIcon(Icons.local_offer), findsOneWidget);
-    expect(find.text('Social Market'), findsOneWidget);
-
-    // Mensagem de boas-vindas.
-    expect(find.text('Bem-vindo!'), findsOneWidget);
-
-    // Ações da tela: botão de sair no corpo e atalho de perfil na AppBar.
-    expect(find.byType(SignOutButton), findsOneWidget);
-    expect(find.widgetWithIcon(IconButton, Icons.person), findsOneWidget);
+    // Placeholder elegante no lugar do antigo HomeScreen.
+    expect(find.text('Feed de ofertas em breve!'), findsOneWidget);
+    expect(find.byIcon(Icons.storefront), findsAtLeastNWidgets(1));
   });
 
   testWidgets('SocialMarketApp usa appTheme como tema', (tester) async {
