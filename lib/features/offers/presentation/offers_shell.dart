@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../profile/presentation/profile_tab.dart';
 import 'new_offer_screen.dart';
+import 'offers_feed_screen.dart';
 
 /// Shell pós-login com navegação inferior de três abas:
 /// Ofertas | Nova Oferta | Perfil.
@@ -39,7 +40,7 @@ class _OffersShellState extends ConsumerState<OffersShell> {
       body: IndexedStack(
         index: _currentIndex,
         children: <Widget>[
-          const _OffersFeedPlaceholder(),
+          const OffersFeedScreen(),
           NewOfferScreen(onOfferSaved: () => _selectTab(0)),
           const ProfileTab(),
         ],
@@ -70,44 +71,3 @@ class _OffersShellState extends ConsumerState<OffersShell> {
   }
 }
 
-/// Placeholder elegante do feed de ofertas (Fase 3).
-class _OffersFeedPlaceholder extends StatelessWidget {
-  const _OffersFeedPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.storefront,
-              size: 72,
-              color: theme.colorScheme.primary,
-              semanticLabel: 'Lojas',
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Feed de ofertas em breve!',
-              style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Em breve você acompanha aqui as melhores ofertas '
-              'compartilhadas pela comunidade.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

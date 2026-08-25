@@ -19,7 +19,15 @@ class OfferModel {
   final double? regularPrice;
   final String unit;
   final String storeId;
+
+  /// Nome do mercado denormalizado na criação (evita join com /stores no
+  /// feed). Sempre gravado no documento, mesmo vazio.
+  final String storeName;
   final String authorUid;
+
+  /// Nome de exibição do autor denormalizado na criação. Sempre gravado no
+  /// documento, mesmo vazio.
+  final String authorName;
   final String? imageUrl;
   final DateTime createdAt;
   final int confirmCount;
@@ -33,7 +41,9 @@ class OfferModel {
     this.regularPrice,
     this.unit = 'un',
     required this.storeId,
+    this.storeName = '',
     required this.authorUid,
+    this.authorName = '',
     this.imageUrl,
     required this.createdAt,
     this.confirmCount = 0,
@@ -67,7 +77,9 @@ class OfferModel {
       regularPrice: _asDoubleOrNull(map['regularPrice']),
       unit: (map['unit'] as String?) ?? 'un',
       storeId: (map['storeId'] as String?) ?? '',
+      storeName: (map['storeName'] as String?) ?? '',
       authorUid: (map['authorUid'] as String?) ?? '',
+      authorName: (map['authorName'] as String?) ?? '',
       imageUrl: map['imageUrl'] as String?,
       createdAt: _asDateTime(map['createdAt'])!,
       confirmCount: (map['confirmCount'] as num?)?.toInt() ?? 0,
@@ -83,7 +95,11 @@ class OfferModel {
       if (regularPrice != null) 'regularPrice': regularPrice,
       'unit': unit,
       'storeId': storeId,
+      // Sempre presentes (mesmo vazios) p/ consistência com as rules e leitura
+      // direta no feed sem join.
+      'storeName': storeName,
       'authorUid': authorUid,
+      'authorName': authorName,
       if (imageUrl != null) 'imageUrl': imageUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'confirmCount': confirmCount,
@@ -100,7 +116,9 @@ class OfferModel {
     Object? regularPrice = _unset,
     String? unit,
     String? storeId,
+    String? storeName,
     String? authorUid,
+    String? authorName,
     Object? imageUrl = _unset,
     DateTime? createdAt,
     int? confirmCount,
@@ -117,7 +135,9 @@ class OfferModel {
               : regularPrice as double?,
       unit: unit ?? this.unit,
       storeId: storeId ?? this.storeId,
+      storeName: storeName ?? this.storeName,
       authorUid: authorUid ?? this.authorUid,
+      authorName: authorName ?? this.authorName,
       imageUrl: identical(imageUrl, _unset) ? this.imageUrl : imageUrl as String?,
       createdAt: createdAt ?? this.createdAt,
       confirmCount: confirmCount ?? this.confirmCount,
@@ -150,7 +170,9 @@ class OfferModel {
         other.regularPrice == regularPrice &&
         other.unit == unit &&
         other.storeId == storeId &&
+        other.storeName == storeName &&
         other.authorUid == authorUid &&
+        other.authorName == authorName &&
         other.imageUrl == imageUrl &&
         other.createdAt.isAtSameMomentAs(createdAt) &&
         other.confirmCount == confirmCount &&
@@ -162,8 +184,17 @@ class OfferModel {
       a == null ? b == null : (b != null && a.isAtSameMomentAs(b));
 
   @override
-  int get hashCode =>
-      Object.hash(id, productName, price, unit, storeId, authorUid, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    productName,
+    price,
+    unit,
+    storeId,
+    storeName,
+    authorUid,
+    authorName,
+    createdAt,
+  );
 
   @override
   String toString() =>

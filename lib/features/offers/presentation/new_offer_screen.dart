@@ -268,7 +268,11 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
         regularPrice: _parseMoney(_regularPriceController.text),
         unit: _unit,
         storeId: store.id!,
+        storeName: store.name,
         authorUid: uid,
+        authorName:
+            ref.read(firebaseAuthProvider).currentUser?.displayName ??
+            'Usuário',
         imageUrl: imageUrl,
         createdAt: DateTime.now(),
         // status: OfferStatus.active e confirmCount: 0 são os defaults.
