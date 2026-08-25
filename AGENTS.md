@@ -9,10 +9,15 @@ Toda issue criada por agentes deve:
 1. **Ser associada ao projeto GitHub "Social Market"** (`cesargranelli/social_market_app`, owner `cesargranelli`).
    - Via CLI: `gh project item-add <numero-do-projeto> --owner cesargranelli --url <url-da-issue>`
    - Requer token com escopo Projects V2 (PAT fine-grained não acessa projetos de usuário — se falhar, sinalizar ao usuário).
-2. **Ser assinada para @cesargranellidev**: `gh issue edit <n> --add-assignee cesargranellidev`
+2. **Ser assinada para @cesargranellidev**: `gh issue edit <n> --add-assignee cesargranellidev` (obrigatório em **toda** issue criada).
 3. **Ter branch vinculada em Development** (criada via CLI, já aparece na seção Development da issue):
    - `gh issue develop <n> --name <nome-branch> --base main`
    - Convenção de nome: kebab-case descritivo (ex.: `fase-1-fundacao-tecnica`, `feat-nova-oferta`).
+4. **Manter a issue atualizada sempre que houver atuação nela**:
+   - Comentar progressos relevantes (decisões, entregas parciais, bloqueios).
+   - Manter o campo **Status** no projeto "Social Market" sincronizado: `Ready` ao priorizar, `In progress` ao iniciar trabalho, `In review` quando houver PR aberto, `Done` ao concluir.
+   - Ao concluir: fechar com `--reason completed` + comentário referenciando commit hash.
+   - Se o MCP de Projects estiver indisponível, usar GraphQL REST direto com o token classic (`updateProjectV2ItemFieldValue`).
 
 ## Organização
 
