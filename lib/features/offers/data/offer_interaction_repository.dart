@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../domain/offer_comment.dart';
 
-/// Interações sociais sobre uma oferta: curtidas e comentários.
+/// Interações sociais sobre uma oferta: curtidas, comentários e confirmações.
 ///
 /// Estrutura no Firestore:
 /// - offers/{offerId}/likes/{likerUid}  -> doc por usuário (id = uid)
 /// - offers/{offerId}/comments/{autoId}
+/// - offers/{offerId}/confirmations/{uid} -> dispara Cloud Functions que
+///   mantêm `confirmCount`, status e pontuação do autor (docs/functions.md).
 class OfferInteractionRepository {
   OfferInteractionRepository(this._db, this._auth);
 
@@ -21,6 +23,9 @@ class OfferInteractionRepository {
 
   CollectionReference<Map<String, dynamic>> _comments(String offerId) =>
       _db.collection('offers').doc(offerId).collection('comments');
+
+  CollectionReference<Map<String, dynamic>> _confirmations(String offerId) =>
+      _db.collection('offers').doc(offerId).collection('confirmations');
 
   /// Curte/descurte a oferta para o usuário atual. Retorna `true` quando a
   /// chamada RESULTOU em curtida (criação) e `false` quando em descurtida
@@ -86,6 +91,40 @@ class OfferInteractionRepository {
               .map((doc) => OfferComment.fromMap(doc.id, doc.data()))
               .toList(),
         );
+  }
+
+  /// Registra a confirmação do usuário autenticado na oferta.
+  ///
+  /// O doc é idempotente por construção (doc id = uid), e as rules só
+  /// permitem create/delete do próprio uid. Os efeitos (confirmCount,
+  /// status `verified`, pontos do autor) são aplicados pelas Cloud
+  /// Functions — o client NUNCA escreve esses campos diretamente.
+  Future<void> addConfirmation(String offerId) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw StateError('Usuário não autenticado');
+    }
+    await _confirmations(offerId).doc(user.uid).set(<String, dynamic>{
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Emite true se [uid] já confirmou [offerId] (reage a add/remove ao vivo).
+  Stream<bool> hasConfirmed(String offerId, String uid) {
+    return _confirmations(offerId)
+        .doc(uid)
+        .snapshots()
+        .map((snapshot) => snapshot.exists);
+  }
+
+  /// Contagem de confirmações da oferta em tempo real.
+  ///
+  /// Nota: `count().snapshots()` só existe em cloud_firestore >= 6; na v5
+  /// observamos os snapshots da subcoleção e contamos os docs localmente.
+  Stream<int> watchConfirmCount(String offerId) {
+    return _confirmations(offerId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
   }
 }
 

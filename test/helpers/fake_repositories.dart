@@ -94,6 +94,7 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
       <({String offerId, bool liked})>[];
   final List<({String offerId, String text})> addCommentCalls =
       <({String offerId, String text})>[];
+  final List<String> addConfirmationCalls = <String>[];
 
   Object? toggleLikeError;
   Object? addCommentError;
@@ -110,6 +111,7 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
   final Map<String, List<StreamController<List<OfferComment>>>>
   _commentSubscribers =
       <String, List<StreamController<List<OfferComment>>>>{};
+  final Map<String, Set<String>> _confirmedBy = <String, Set<String>>{};
 
   int _nextCommentId = 1;
 
@@ -140,8 +142,7 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
     } else {
       liked.add(currentUid);
       nowLiked = true;
-      _likeCounts[offerId] = (_likeCounts[offerId] ?? 0) + 1;
-    }
+      _likeCounts[offerId] = (_likeCounts[offerId] ?? 0) + 1;    }
     toggleLikeCalls.add((offerId: offerId, liked: nowLiked));
 
     for (final StreamController<bool> controller
@@ -221,6 +222,28 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
         .putIfAbsent(offerId, () => <StreamController<List<OfferComment>>>[])
         .add(controller);
     return controller.stream;
+  }
+
+  @override
+  Future<void> addConfirmation(String offerId) async {
+    addConfirmationCalls.add(offerId);
+    final Set<String> confirmed = _confirmedBy.putIfAbsent(
+      offerId,
+      () => <String>{},
+    );
+    confirmed.add(currentUid);
+  }
+
+  @override
+  Stream<bool> hasConfirmed(String offerId, String uid) {
+    return Stream<bool>.value(
+      _confirmedBy[offerId]?.contains(uid) ?? false,
+    );
+  }
+
+  @override
+  Stream<int> watchConfirmCount(String offerId) {
+    return Stream<int>.value(_confirmedBy[offerId]?.length ?? 0);
   }
 }
 

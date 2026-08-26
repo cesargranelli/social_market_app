@@ -71,6 +71,16 @@ service cloud.firestore {
           && request.resource.data.text.size() <= 500;
         allow update, delete: if false; // moderação futura via Admin SDK
       }
+
+      // Confirmações ("Confirmei esse preço"): o doc por usuário alimenta as
+      // Cloud Functions, que são as únicas a escrever confirmCount/status/
+      // pontos do autor (Admin SDK ignora rules).
+      match /confirmations/{confirmerUid} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.auth.uid == confirmerUid;
+        allow delete: if isSignedIn() && request.auth.uid == confirmerUid;
+        allow update: if false;
+      }
     }
 
     match /stores/{storeId} {
