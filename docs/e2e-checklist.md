@@ -18,18 +18,39 @@ rules de Firestore/Storage.
 3. **SHA-1 do Google Sign-In**: o login com Google no Android exige a impressão
    digital SHA-1 do keystore registrada no Console
    (Authentication → Sign-in method → Google → adicionar impressão digital).
-   Para obter a SHA-1 de debug:
-   ```powershell
-   keytool -list -v -alias androiddebugkey `
-     -keystore "$env:USERPROFILE\.android\debug.keystore" `
-     -storepass android -keypass android
+   A SHA-1 de debug atual é:
    ```
-   Após registrar a SHA-1, baixe novamente o `google-services.json`.
-4. **Rodar o app** em dispositivo/emulador Android:
+   D4:DD:4C:3E:BC:26:9E:63:B5:2E:5B:9E:BB:B0:C8:19:A6:82:CD:D8
+   ```
+   Para regenerar (ex.: troca de máquina):
+   ```powershell
+   # JDK 25 em PT-BR tem bug de formatação; force locale en:
+   & "C:\Programas\Java\jdk-25\bin\keytool.exe" "-J-Duser.language=en" `
+     "-J-Duser.country=US" -list -v -alias androiddebugkey `
+     -keystore "$env:USERPROFILE\.android\debug.keystore" `
+     -storepass android -keypass android | Select-String "SHA1:"
+   ```
+   Após registrar a SHA-1, rode `flutterfire configure` para baixar um
+   `google-services.json` com o `oauth_client` Android populado
+   (**hoje ele está vazio** — sem isso o Google Sign-In falha).
+4. **⚠️ App Check obrigatório (causa de 401 no login)**: o projeto tem
+   enforcement de App Check no Identity Toolkit. Sem atestação válida,
+   **todo login retorna 401 "Firebase App Check token is invalid"** — mesmo
+   com credenciais corretas. O app já inicializa o App Check em `main.dart`
+   (`AndroidProvider.debug`/`AppleProvider.debug` em builds debug). É preciso,
+   uma vez por máquina de desenvolvimento:
+   1. Rodar o app — o token de debug aparece no logcat/console com a mensagem
+      de `FirebaseAppCheck` ("Debug App Check token...").
+   2. Copiá-lo em Firebase Console → **App Check → Apps → ⋮ → Gerenciar
+      tokens de depuração** → colar e salvar.
+   Em release, o provider passa a ser Play Integrity (Android) /
+   DeviceCheck (iOS): registre os apps em App Check → Aplicativos antes da
+   primeira build de produção.
+5. **Rodar o app** em dispositivo/emulador Android:
    ```powershell
    flutter run
    ```
-5. Ter à mão um usuário de teste (crie na própria tela de login por e-mail/senha)
+6. Ter à mão um usuário de teste (crie na própria tela de login por e-mail/senha)
    e acesso ao Console do Firebase (Firestore e Storage) para conferir os dados.
 
 ## Checklist E2E numerado
