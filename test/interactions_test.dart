@@ -26,6 +26,67 @@ void main() {
   CollectionReference<Map<String, dynamic>> likesCol(String offerId) =>
       db.collection('offers').doc(offerId).collection('likes');
 
+  CollectionReference<Map<String, dynamic>> confirmationsCol(
+    String offerId,
+  ) => db.collection('offers').doc(offerId).collection('confirmations');
+
+  group('confirmations', () {
+    test('addConfirmation grava doc correto e é idempotente por uid', () async {
+      await repository.addConfirmation('of1');
+
+      final doc = await confirmationsCol('of1').doc('u1').get();
+      expect(doc.exists, isTrue);
+      expect(doc.data()!['createdAt'], isNotNull);
+
+      // Regravar o mesmo uid não cria doc extra.
+      await repository.addConfirmation('of1');
+      expect((await confirmationsCol('of1').get()).docs, hasLength(1));
+    });
+
+    test('addConfirmation sem usuário autenticado lança StateError',
+        () async {
+      await auth.signOut();
+      expect(() => repository.addConfirmation('of1'), throwsStateError);
+    });
+
+    test('hasConfirmed reflete existência do doc do usuário', () async {
+      expect(await repository.hasConfirmed('of1', 'u1').first, isFalse);
+
+      await repository.addConfirmation('of1');
+
+      expect(await repository.hasConfirmed('of1', 'u1').first, isTrue);
+
+      // Outro usuário não aparece como tendo confirmado.
+      expect(await repository.hasConfirmed('of1', 'u2').first, isFalse);
+    });
+
+    test('watchConfirmCount conta docs da subcoleção', () async {
+      expect(await repository.watchConfirmCount('of1').first, 0);
+
+      await confirmationsCol('of1').doc('u1').set(<String, dynamic>{
+        'createdAt': DateTime.now(),
+      });
+      expect(await repository.watchConfirmCount('of1').first, 1);
+
+      await confirmationsCol('of1').doc('u2').set(<String, dynamic>{
+        'createdAt': DateTime.now(),
+      });
+      await confirmationsCol('of1').doc('u3').set(<String, dynamic>{
+        'createdAt': DateTime.now(),
+      });
+      expect(await repository.watchConfirmCount('of1').first, 3);
+    });
+
+    test('watchConfirmCount é isolado por oferta', () async {
+      await confirmationsCol('of1').doc('u1').set(<String, dynamic>{
+        'createdAt': DateTime.now(),
+      });
+
+      expect(await repository.watchConfirmCount('of2').first, 0);
+      expect(await repository.watchConfirmCount('of1').first, 1);
+    });
+  });
+
   group('toggleLike', () {
     test('cria like retornando true e remove retornando false (idempotente)',
         () async {
