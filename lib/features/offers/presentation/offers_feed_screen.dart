@@ -173,8 +173,9 @@ class _FeedErrorView extends StatelessWidget {
 }
 
 /// Card de oferta do feed: foto/placeholder, produto, preços, mercado,
-/// autor e tempo relativo. Ofertas expiradas exibem chip, mas seguem
-/// clicáveis (o chip é apenas indicativo).
+/// autor e tempo relativo. Chips de status (expirada/verificada) são
+/// apenas indicativos — o card segue clicável — e ofertas com confirmações
+/// exibem um mini-indicador com a contagem.
 class _OfferCard extends StatelessWidget {
   const _OfferCard({required this.offer, required this.onTap});
 
@@ -204,15 +205,16 @@ class _OfferCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          offer.productName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Expanded(
+                      child: Text(
+                        offer.productName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (offer.isExpired) const OfferStatusChip(),
+                    ),
+                    if (offer.status != OfferStatus.active)
+                      OfferStatusChip(status: offer.status),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -265,6 +267,35 @@ class _OfferCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      // Mini-indicador de validação da comunidade.
+                      if (offer.confirmCount > 0) ...<Widget>[
+                        const SizedBox(width: 8),
+                        Semantics(
+                          label:
+                              '${offer.confirmCount} confirmações da comunidade',
+                          excludeSemantics: true,
+                          child: Row(
+                            key: const Key('offer_card_confirm_indicator'),
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                Icons.verified,
+                                size: 14,
+                                color: Colors.green.shade700,
+                                semanticLabel: 'Confirmações',
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${offer.confirmCount}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.green.shade800,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 4),

@@ -144,6 +144,18 @@ void main() {
       expect(() => OfferStatus.fromString('invalido'), throwsArgumentError);
     });
 
+    test('OfferStatus inclui verified (conversão e roundtrip)', () {
+      expect(OfferStatus.fromString('verified'), OfferStatus.verified);
+      expect(OfferStatus.verified.name, 'verified');
+
+      final offer = buildOffer().copyWith(status: OfferStatus.verified);
+      final restored = OfferModel.fromMap(offer.id!, offer.toMap());
+
+      expect(restored.status, OfferStatus.verified);
+      // verified não é expirada.
+      expect(restored.isExpired, isFalse);
+    });
+
     test('isExpired reflete status', () {
       expect(buildOffer().isExpired, isFalse);
       expect(
