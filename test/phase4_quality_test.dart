@@ -293,7 +293,10 @@ void main() {
       // Card de pontos (stream do UserRepository fake).
       expect(find.byIcon(Icons.stars), findsOneWidget);
       expect(find.text('7 pontos'), findsOneWidget);
-      expect(find.text('Em breve: badges e ranking!'), findsOneWidget);
+      expect(
+        find.text('Ganhe pontos publicando e confirmando ofertas.'),
+        findsOneWidget,
+      );
 
       // Logout acessível.
       expect(find.byType(SignOutButton), findsOneWidget);

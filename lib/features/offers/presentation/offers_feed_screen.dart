@@ -317,6 +317,21 @@ class _OfferCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      // Mini-badge de autor confiável (oferta verificada
+                      // pela comunidade).
+                      if (offer.status == OfferStatus.verified) ...<Widget>[
+                        const SizedBox(width: 4),
+                        Tooltip(
+                          key: const Key('offer_card_author_premium_badge'),
+                          message: 'Autor com oferta verificada',
+                          child: Icon(
+                            Icons.workspace_premium,
+                            size: 14,
+                            color: Colors.amber.shade800,
+                            semanticLabel: 'Autor com oferta verificada',
+                          ),
+                        ),
+                      ],
                       Text(
                         formatRelativeTime(offer.createdAt),
                         style: theme.textTheme.bodySmall?.copyWith(

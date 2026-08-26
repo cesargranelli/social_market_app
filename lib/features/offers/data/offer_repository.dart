@@ -47,6 +47,23 @@ class OfferRepository {
     return OfferModel.fromMap(snapshot.id, data);
   }
 
+  /// Total de ofertas publicadas pelo autor [uid] (qualquer status).
+  Future<int> countOffersByAuthor(String uid) async {
+    final snapshot = await _offers
+        .where('authorUid', isEqualTo: uid)
+        .get();
+    return snapshot.docs.length;
+  }
+
+  /// Total de ofertas verificadas pela comunidade publicadas por [uid].
+  Future<int> countVerifiedByAuthor(String uid) async {
+    final snapshot = await _offers
+        .where('authorUid', isEqualTo: uid)
+        .where('status', isEqualTo: OfferStatus.verified.name)
+        .get();
+    return snapshot.docs.length;
+  }
+
   Future<void> markExpired(String id) {
     return _offers.doc(id).update(<String, dynamic>{
       'status': OfferStatus.expired.name,

@@ -82,14 +82,24 @@ void main() {
     await tester.tap(find.text('Perfil'));
     await _pumpFrames(tester);
 
-    // Dados de autenticação.
-    expect(find.text('Maria Silva'), findsOneWidget);
+    // Dados de autenticação (nome aparece no cabeçalho e na linha do
+    // usuário logado no ranking).
+    expect(find.text('Maria Silva'), findsNWidgets(2));
     expect(find.text('maria@exemplo.com'), findsOneWidget);
 
     // Pontos vindos do stream do UserRepository fake.
     expect(find.byIcon(Icons.stars), findsOneWidget);
     expect(find.text('42 pontos'), findsOneWidget);
-    expect(find.text('Em breve: badges e ranking!'), findsOneWidget);
+    expect(
+      find.text('Ganhe pontos publicando e confirmando ofertas.'),
+      findsOneWidget,
+    );
+
+    // Seções novas de gamificação presentes.
+    expect(find.text('Ranking da comunidade'), findsOneWidget);
+    expect(find.byIcon(Icons.leaderboard), findsOneWidget);
+    expect(find.text('42 pts'), findsOneWidget);
+    expect(find.text('Publique ofertas para ganhar badges!'), findsOneWidget);
 
     // Logout permanece acessível na aba.
     expect(find.byType(SignOutButton), findsOneWidget);

@@ -73,6 +73,23 @@ class FakeOfferRepository implements OfferRepository {
 
   @override
   Future<void> deleteOffer(String id) async {}
+
+  int _countByAuthor(String uid, {bool onlyVerified = false}) =>
+      recentOffers
+          .where(
+            (offer) =>
+                offer.authorUid == uid &&
+                (!onlyVerified || offer.status == OfferStatus.verified),
+          )
+          .length;
+
+  @override
+  Future<int> countOffersByAuthor(String uid) async =>
+      _countByAuthor(uid);
+
+  @override
+  Future<int> countVerifiedByAuthor(String uid) async =>
+      _countByAuthor(uid, onlyVerified: true);
 }
 
 /// Fake leve de [OfferInteractionRepository]: mantém estado interno de
@@ -282,6 +299,12 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
     return controller.stream;
   }
 
+  @override
+  Future<int> countCommentsByAuthor(String uid) async => _comments.values
+      .expand((List<OfferComment> comments) => comments)
+      .where((OfferComment comment) => comment.uid == uid)
+      .length;
+
   /// Reemite contagem/estado de confirmação para os subscribers ativos,
   /// simulando o snapshot do Firestore após a escrita.
   void _notifyConfirmationsChanged(String offerId) {
@@ -361,9 +384,20 @@ class FakeStoreRepository implements StoreRepository {
 }
 
 class FakeUserRepository implements UserRepository {
-  FakeUserRepository({UserModel? profile}) : _profile = profile;
+  FakeUserRepository({UserModel? profile, this.topUsers})
+    : _profile = profile;
 
   UserModel? _profile;
+
+  /// Ranking opcional devolvido por [watchTopUsers].
+  ///
+  /// Quando NULO, preserva o comportamento original de emitir `[perfil]`;
+  /// quando fornecido (mesmo VAZIO), é usado como ranking — permite testar
+  /// estado vazio e múltiplos usuários.
+  List<UserModel>? topUsers;
+
+  /// Erro (se definido) emitido por [watchTopUsers].
+  Object? watchTopUsersError;
 
   void setProfile(UserModel? profile) => _profile = profile;
 
@@ -377,6 +411,15 @@ class FakeUserRepository implements UserRepository {
 
   @override
   Future<void> ensureUserDocument(User user) async {}
+
+  @override
+  Stream<List<UserModel>> watchTopUsers({int limit = 10}) {
+    final Object? error = watchTopUsersError;
+    if (error != null) return Stream<List<UserModel>>.error(error);
+    final List<UserModel> source =
+        topUsers ?? <UserModel>[if (_profile != null) _profile!];
+    return Stream<List<UserModel>>.value(source.take(limit).toList());
+  }
 
   UserModel? _profileFor(String uid) {
     final UserModel? profile = _profile;
@@ -393,6 +436,7 @@ class Phase3TestHarness {
   Phase3TestHarness({
     MockUser? user,
     UserModel? profile,
+    List<UserModel>? topUsers,
     List<StoreModel> seedStores = const <StoreModel>[],
     FakeOfferInteractionRepository? interactions,
   }) : mockUser =
@@ -404,7 +448,7 @@ class Phase3TestHarness {
            )),
        offersRepository = FakeOfferRepository(),
        storesRepository = FakeStoreRepository(stores: seedStores),
-       userRepository = FakeUserRepository(),
+       userRepository = FakeUserRepository(profile: profile, topUsers: topUsers),
        interactionsRepository =
            interactions ?? FakeOfferInteractionRepository() {
     userProfile =
