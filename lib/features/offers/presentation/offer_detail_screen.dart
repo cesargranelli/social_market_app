@@ -18,7 +18,8 @@ final _offerByIdProvider = FutureProvider.autoDispose
       return ref.watch(offerRepositoryProvider).getById(offerId);
     });
 
-/// Detalhe de uma oferta: dados completos, curtida e comentários.
+/// Detalhe de uma oferta: dados completos, curtida, validação da
+/// comunidade e comentários.
 ///
 /// Recebe o [offerId] como parâmetro da rota '/oferta/:id'.
 class OfferDetailScreen extends ConsumerWidget {
@@ -158,7 +159,8 @@ class _OfferDetailView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (offer.isExpired) const OfferStatusChip(),
+                    if (offer.status != OfferStatus.active)
+                      OfferStatusChip(status: offer.status),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -248,6 +250,11 @@ class _OfferDetailView extends StatelessWidget {
                 ),
                 const Divider(height: 32),
                 _LikeSection(offerId: offer.id ?? ''),
+                const Divider(),
+                _ValidationSection(
+                  offerId: offer.id ?? '',
+                  status: offer.status,
+                ),
                 const Divider(),
                 _CommentsSection(offerId: offer.id ?? ''),
               ],
@@ -390,6 +397,182 @@ class _LikeSectionState extends ConsumerState<_LikeSection> {
             return Text(
               '$displayCount',
               style: theme.textTheme.titleMedium,
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Validação colaborativa: contador de confirmações em tempo real e botão
+/// para confirmar o preço.
+///
+/// Feedback imediato via estado local otimista: o botão desabilita no
+/// toque, antes do ack do servidor. Em erro, o estado reverte com SnackBar
+/// amigável. Ofertas expiradas exibem o botão desabilitado com hint
+/// explicativo.
+class _ValidationSection extends ConsumerStatefulWidget {
+  const _ValidationSection({required this.offerId, required this.status});
+
+  final String offerId;
+  final OfferStatus status;
+
+  @override
+  ConsumerState<_ValidationSection> createState() => _ValidationSectionState();
+}
+
+class _ValidationSectionState extends ConsumerState<_ValidationSection> {
+  bool _busy = false;
+
+  /// Confirmação otimista: true assim que o usuário toca (feedback
+  /// imediato); revertido em erro até o stream confirmar.
+  bool _optimisticConfirmed = false;
+
+  Future<void> _confirm() async {
+    if (_busy || _optimisticConfirmed) return;
+    if (widget.status == OfferStatus.expired) return;
+
+    setState(() {
+      _busy = true;
+      _optimisticConfirmed = true;
+    });
+
+    try {
+      await ref
+          .read(offerInteractionRepositoryProvider)
+          .addConfirmation(widget.offerId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Obrigado por validar!'),
+          ),
+        );
+    } catch (error) {
+      debugPrint('[OfferDetail] Falha ao registrar confirmação: $error');
+      if (!mounted) return;
+      // Reverte ao último estado confirmado pelo stream.
+      setState(() => _optimisticConfirmed = false);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+            content: const Text(
+              'Não foi possível registrar sua confirmação. Tente novamente.',
+            ),
+          ),
+        );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  String _countLabel(int count) {
+    if (count <= 0) return 'Seja o primeiro a confirmar';
+    if (count == 1) return '1 confirmação';
+    return '$count confirmações';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final String? uid = ref.watch(authStateChangesProvider).value?.uid;
+    final OfferInteractionRepository repository = ref.watch(
+      offerInteractionRepositoryProvider,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Validação da comunidade', style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        // Contador de confirmações em tempo real.
+        StreamBuilder<int>(
+          stream: repository.watchConfirmCount(widget.offerId),
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            final int? count = snapshot.data;
+            if (count == null) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 2),
+                child: SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              );
+            }
+            return Semantics(
+              label: '${_countLabel(count)} da comunidade',
+              excludeSemantics: true,
+              child: Text(
+                _countLabel(count),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: count > 0
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: count > 0 ? FontWeight.w600 : null,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        // Estado de confirmação do usuário atual + botão.
+        StreamBuilder<bool>(
+          stream: (uid == null || uid.isEmpty)
+              ? null
+              : repository.hasConfirmed(widget.offerId, uid),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            final bool streamedConfirmed = snapshot.data ?? false;
+            final bool confirmed = _optimisticConfirmed || streamedConfirmed;
+            final bool expired = widget.status == OfferStatus.expired;
+            final bool signedOut = uid == null || uid.isEmpty;
+            final bool enabled =
+                !_busy && !confirmed && !expired && !signedOut;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                FilledButton.tonalIcon(
+                  key: const Key('offer_detail_confirm_button'),
+                  onPressed: enabled ? _confirm : null,
+                  icon: Icon(
+                    confirmed ? Icons.verified : Icons.verified_outlined,
+                    semanticLabel:
+                        'Confirmar preço desta oferta',
+                  ),
+                  label: Text(
+                    confirmed
+                        ? 'Você confirmou esta oferta'
+                        : 'Confirmei esse preço',
+                  ),
+                ),
+                if (expired)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'Esta oferta expirou e não aceita novas confirmações.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                else if (signedOut)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'Entre com sua conta para validar esta oferta.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+              ],
             );
           },
         ),

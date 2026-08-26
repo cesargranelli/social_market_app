@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum OfferStatus {
   active,
+
+  /// Definido pelas Cloud Functions quando a oferta atinge o limite de
+  /// confirmações da comunidade — o client NUNCA grava este valor.
+  verified,
   expired;
 
   static OfferStatus fromString(String value) {

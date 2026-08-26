@@ -76,11 +76,12 @@ class FakeOfferRepository implements OfferRepository {
 }
 
 /// Fake leve de [OfferInteractionRepository]: mantém estado interno de
-/// curtidas/comentários e emite atualizações pelos streams, como o
-/// Firestore faria. Chamadas e erros são registrados/forçáveis nos testes.
+/// curtidas/comentários/confirmações e emite atualizações pelos streams,
+/// como o Firestore faria. Chamadas e erros são registrados/forçáveis nos
+/// testes.
 ///
-/// Limitação assumida: `hasLiked` emite apenas o estado do usuário atual
-/// ([currentUid]) — suficiente para os widget tests.
+/// Limitação assumida: `hasLiked`/`hasConfirmed` refletem apenas o usuário
+/// atual ([currentUid]) — suficiente para os widget tests.
 class FakeOfferInteractionRepository implements OfferInteractionRepository {
   FakeOfferInteractionRepository({
     this.currentUid = 'uid-1',
@@ -99,6 +100,10 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
   Object? toggleLikeError;
   Object? addCommentError;
 
+  /// Erro (se definido) lançado pela próxima [addConfirmation] — a chamada
+  /// é registrada ANTES do throw (permite afirmar que foi tentada).
+  Object? addConfirmationError;
+
   final Map<String, Set<String>> _likedBy = <String, Set<String>>{};
   final Map<String, int> _likeCounts = <String, int>{};
   final Map<String, List<OfferComment>> _comments =
@@ -112,20 +117,38 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
   _commentSubscribers =
       <String, List<StreamController<List<OfferComment>>>>{};
   final Map<String, Set<String>> _confirmedBy = <String, Set<String>>{};
+  final Map<String, List<StreamController<int>>> _confirmCountSubscribers =
+      <String, List<StreamController<int>>>{};
+  final Map<String, List<StreamController<bool>>> _hasConfirmedSubscribers =
+      <String, List<StreamController<bool>>>{};
 
   int _nextCommentId = 1;
 
   /// Semeia o estado inicial de uma oferta (chamar ANTES do pumpWidget).
+  ///
+  /// [confirmCount] é a contagem TOTAL de confirmações; se
+  /// [confirmedByCurrentUser] for true, o próprio uid conta como uma delas
+  /// e o restante é preenchido com uids sintéticos.
   void seed({
     required String offerId,
     int likeCount = 0,
     bool likedByCurrentUser = false,
     List<OfferComment> comments = const <OfferComment>[],
+    int confirmCount = 0,
+    bool confirmedByCurrentUser = false,
   }) {
     _likeCounts[offerId] = likeCount;
     final Set<String> liked = _likedBy.putIfAbsent(offerId, () => <String>{});
     if (likedByCurrentUser) liked.add(currentUid);
     _comments[offerId] = List<OfferComment>.of(comments);
+
+    final Set<String> confirmed = <String>{};
+    if (confirmedByCurrentUser) confirmed.add(currentUid);
+    int extras = confirmCount - confirmed.length;
+    for (int i = 0; i < extras; i++) {
+      confirmed.add('uid-confirmacao-$i');
+    }
+    _confirmedBy[offerId] = confirmed;
   }
 
   @override
@@ -226,24 +249,54 @@ class FakeOfferInteractionRepository implements OfferInteractionRepository {
 
   @override
   Future<void> addConfirmation(String offerId) async {
+    // Registra a TENTATIVA mesmo quando falha (mesmo padrão do upload).
     addConfirmationCalls.add(offerId);
+    final Object? error = addConfirmationError;
+    if (error != null) throw error;
+
     final Set<String> confirmed = _confirmedBy.putIfAbsent(
       offerId,
       () => <String>{},
     );
     confirmed.add(currentUid);
+    _notifyConfirmationsChanged(offerId);
   }
 
   @override
   Stream<bool> hasConfirmed(String offerId, String uid) {
-    return Stream<bool>.value(
-      _confirmedBy[offerId]?.contains(uid) ?? false,
-    );
+    final StreamController<bool> controller = StreamController<bool>();
+    controller.add((_confirmedBy[offerId] ?? const <String>{}).contains(uid));
+    _hasConfirmedSubscribers
+        .putIfAbsent(offerId, () => <StreamController<bool>>[])
+        .add(controller);
+    return controller.stream;
   }
 
   @override
   Stream<int> watchConfirmCount(String offerId) {
-    return Stream<int>.value(_confirmedBy[offerId]?.length ?? 0);
+    final StreamController<int> controller = StreamController<int>();
+    controller.add(_confirmedBy[offerId]?.length ?? 0);
+    _confirmCountSubscribers
+        .putIfAbsent(offerId, () => <StreamController<int>>[])
+        .add(controller);
+    return controller.stream;
+  }
+
+  /// Reemite contagem/estado de confirmação para os subscribers ativos,
+  /// simulando o snapshot do Firestore após a escrita.
+  void _notifyConfirmationsChanged(String offerId) {
+    final Set<String> confirmed =
+        _confirmedBy[offerId] ?? const <String>{};
+    for (final StreamController<int> controller
+        in _confirmCountSubscribers[offerId] ??
+            const <StreamController<int>>[]) {
+      controller.add(confirmed.length);
+    }
+    for (final StreamController<bool> controller
+        in _hasConfirmedSubscribers[offerId] ??
+            const <StreamController<bool>>[]) {
+      controller.add(confirmed.contains(currentUid));
+    }
   }
 }
 
