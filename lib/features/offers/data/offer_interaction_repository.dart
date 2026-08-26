@@ -126,6 +126,19 @@ class OfferInteractionRepository {
         .snapshots()
         .map((snapshot) => snapshot.docs.length);
   }
+
+  /// Total de comentários feitos por [uid] em todas as ofertas, via
+  /// collectionGroup sobre as subcoleções `comments` das ofertas.
+  ///
+  /// Requer índice automático (campo único `uid`) — sem índice composto,
+  /// o Firestore atende sem configuração extra.
+  Future<int> countCommentsByAuthor(String uid) async {
+    final snapshot = await _db
+        .collectionGroup('comments')
+        .where('uid', isEqualTo: uid)
+        .get();
+    return snapshot.docs.length;
+  }
 }
 
 final offerInteractionRepositoryProvider =

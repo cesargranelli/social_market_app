@@ -54,6 +54,19 @@ class UserRepository {
     if (data == null) return null;
     return UserModel.fromMap(snapshot.id, data);
   }
+
+  /// Ranking global: usuários ordenados por pontos (desc), limitado a [limit].
+  Stream<List<UserModel>> watchTopUsers({int limit = 10}) {
+    return _users
+        .orderBy('points', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => UserModel.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
+  }
 }
 
 final userRepositoryProvider = Provider<UserRepository>(

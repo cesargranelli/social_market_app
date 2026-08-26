@@ -12,7 +12,12 @@
           "package_name": "com.example.social_market_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "183973726892-7q9f4gbqi97mic6bm0udvmgpo8qe81g4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyClGK9_ZNGYfZy2uu54s03mZe2Upqu6mhA"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "183973726892-7q9f4gbqi97mic6bm0udvmgpo8qe81g4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "183973726892-nt3tr6878qli2qjtioptjgelom8crsi5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.socialMarketApp"
+              }
+            }
+          ]
         }
       }
     }
