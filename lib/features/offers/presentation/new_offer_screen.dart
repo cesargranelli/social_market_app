@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/providers/firebase_providers.dart';
+import '../../../core/services/location_service.dart';
+import '../../../core/utils/geo_distance.dart';
 import '../../stores/data/store_repository.dart';
 import '../../stores/domain/store_model.dart';
 import '../data/offer_repository.dart';
@@ -83,6 +87,19 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
   double? _parseMoney(String raw) {
     final String normalized = raw.trim().replaceAll(',', '.');
     return double.tryParse(normalized);
+  }
+
+  /// Distância até o mercado quando temos posição do usuário E o mercado
+  /// tem geoPoint; caso contrário null (nada é exibido).
+  double? _distanceKm(StoreModel store, Position? userPosition) {
+    final GeoPoint? geo = store.geoPoint;
+    if (userPosition == null || geo == null) return null;
+    return haversineDistanceKm(
+      lat1: userPosition.latitude,
+      lon1: userPosition.longitude,
+      lat2: geo.latitude,
+      lon2: geo.longitude,
+    );
   }
 
   void _showFeedback(String message, {required bool isError}) {
@@ -347,6 +364,8 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    // Captura silenciosa e única da posição (autoDispose); falha vira null.
+    final Position? userPosition = ref.watch(currentPositionProvider).value;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -479,7 +498,7 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
               ],
             ),
             const SizedBox(height: 4),
-            _buildStoreStatusArea(),
+            _buildStoreStatusArea(userPosition),
             const SizedBox(height: 8),
             OutlinedButton.icon(
               key: const Key('new_offer_open_create_store_button'),
@@ -551,7 +570,7 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
     );
   }
 
-  Widget _buildStoreStatusArea() {
+  Widget _buildStoreStatusArea(Position? userPosition) {
     if (_isSearching) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -614,10 +633,36 @@ class _NewOfferScreenState extends ConsumerState<NewOfferScreen> {
               leading: const Icon(Icons.store_outlined),
               title: Text(store.name),
               subtitle: Text('${store.neighborhood} • ${store.city}'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: _buildDistanceTrailing(context, store, userPosition),
               onTap: () => _selectStore(store),
             ),
           ),
+      ],
+    );
+  }
+
+  /// '· X,X km' + chevron quando há posição do usuário e geoPoint do
+  /// mercado; caso contrário, apenas o chevron.
+  Widget _buildDistanceTrailing(
+    BuildContext context,
+    StoreModel store,
+    Position? userPosition,
+  ) {
+    final double? distanceKm = _distanceKm(store, userPosition);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        if (distanceKm != null) ...<Widget>[
+          Text(
+            '· ${formatDistanceKm(distanceKm)}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
+        const Icon(Icons.chevron_right),
       ],
     );
   }
@@ -643,7 +688,56 @@ class _CreateStoreDialogState extends ConsumerState<_CreateStoreDialog> {
       TextEditingController();
   late final TextEditingController _addressController = TextEditingController();
 
+  GeoPoint? _capturedGeoPoint;
+  bool _isCapturingLocation = false;
   bool _isSaving = false;
+
+  /// Captura a posição atual via [LocationService] (nunca lança).
+  /// Sucesso: guarda o GeoPoint, muda o botão e confirma com SnackBar verde.
+  /// Falha/permissão negada: SnackBar amigável, sem travar o cadastro.
+  Future<void> _captureLocation() async {
+    setState(() => _isCapturingLocation = true);
+    try {
+      final Position? position =
+          await ref.read(locationServiceProvider).getCurrentPosition();
+      if (!mounted) return;
+
+      if (position == null) {
+        _showCaptureFailure();
+        return;
+      }
+
+      setState(
+        () => _capturedGeoPoint = GeoPoint(position.latitude, position.longitude),
+      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            content: const Text('Localização capturada!'),
+          ),
+        );
+    } catch (_) {
+      // Defensivo: o serviço já não lança, mas nunca devemos crashar aqui.
+      if (!mounted) return;
+      _showCaptureFailure();
+    } finally {
+      if (mounted) setState(() => _isCapturingLocation = false);
+    }
+  }
+
+  void _showCaptureFailure() {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Não foi possível obter sua localização.'),
+        ),
+      );
+  }
 
   @override
   void dispose() {
@@ -672,6 +766,7 @@ class _CreateStoreDialogState extends ConsumerState<_CreateStoreDialog> {
         address: _addressController.text.trim().isEmpty
             ? null
             : _addressController.text.trim(),
+        geoPoint: _capturedGeoPoint,
         createdBy: uid,
       );
 
@@ -686,6 +781,7 @@ class _CreateStoreDialogState extends ConsumerState<_CreateStoreDialog> {
           city: created.city,
           neighborhood: created.neighborhood,
           address: created.address,
+          geoPoint: created.geoPoint,
           createdBy: created.createdBy,
         ),
       );
@@ -764,6 +860,22 @@ class _CreateStoreDialogState extends ConsumerState<_CreateStoreDialog> {
                 decoration: const InputDecoration(
                   labelText: 'Endereço',
                   border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  key: const Key('create_store_use_location_button'),
+                  onPressed: _isCapturingLocation ? null : _captureLocation,
+                  icon: _capturedGeoPoint != null
+                      ? const Icon(Icons.check_circle)
+                      : const Icon(Icons.my_location),
+                  label: Text(
+                    _capturedGeoPoint != null
+                        ? 'Localização capturada'
+                        : 'Usar minha localização',
+                  ),
                 ),
               ),
             ],

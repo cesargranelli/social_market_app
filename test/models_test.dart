@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_market_app/features/offers/domain/offer_comment.dart';
 import 'package:social_market_app/features/offers/domain/offer_model.dart';
@@ -72,12 +73,46 @@ void main() {
       expect(restored.address, 'Rua X, 123');
     });
 
-    test('copyWith remove endereço via null explícito não é necessário', () {
+    test('copyWith altera somente o campo informado', () {
       final updated = store.copyWith(name: 'Mercado Novo');
 
       expect(updated.name, 'Mercado Novo');
       expect(updated.city, store.city);
       expect(updated.id, 's1');
+    });
+
+    test('roundtrip com geoPoint preserva coordenadas', () {
+      const geo = GeoPoint(-23.5505, -46.6333);
+      final withGeo = store.copyWith(createdAt: fixedDate, geoPoint: geo);
+
+      final map = withGeo.toMap();
+      expect(map['geoPoint'], geo);
+
+      final restored = StoreModel.fromMap('s1', map);
+      expect(restored.geoPoint, geo);
+      expect(restored, withGeo);
+    });
+
+    test('toMap omite a chave geoPoint quando nula e fromMap tolera ausência',
+        () {
+      final withDate = store.copyWith(createdAt: fixedDate);
+
+      final map = withDate.toMap();
+      expect(map.containsKey('geoPoint'), isFalse);
+
+      final restored = StoreModel.fromMap('s1', map);
+      expect(restored.geoPoint, isNull);
+      expect(restored, withDate);
+    });
+
+    test('copyWith remove geoPoint via null explícito', () {
+      const geo = GeoPoint(-23.5505, -46.6333);
+      final withGeo = store.copyWith(geoPoint: geo);
+      final withoutGeo = withGeo.copyWith(geoPoint: null);
+
+      expect(withGeo.geoPoint, geo);
+      expect(withoutGeo.geoPoint, isNull);
+      expect(withoutGeo.name, store.name);
     });
   });
 

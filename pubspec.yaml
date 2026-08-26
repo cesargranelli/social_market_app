@@ -21,6 +21,7 @@ dependencies:
   flutter_riverpod: ^3.3.2
   go_router: ^17.5.0
   firebase_app_check: ^0.3.2+10
+  geolocator: ^14.0.3
 
 dev_dependencies:
   flutter_test:

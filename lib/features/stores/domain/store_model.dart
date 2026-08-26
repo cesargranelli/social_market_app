@@ -6,6 +6,7 @@ class StoreModel {
   final String city;
   final String neighborhood;
   final String? address;
+  final GeoPoint? geoPoint;
   final String createdBy;
   final DateTime? createdAt;
 
@@ -15,6 +16,7 @@ class StoreModel {
     required this.city,
     required this.neighborhood,
     this.address,
+    this.geoPoint,
     required this.createdBy,
     this.createdAt,
   });
@@ -26,6 +28,7 @@ class StoreModel {
       city: (map['city'] as String?) ?? '',
       neighborhood: (map['neighborhood'] as String?) ?? '',
       address: map['address'] as String?,
+      geoPoint: map['geoPoint'] as GeoPoint?,
       createdBy: (map['createdBy'] as String?) ?? '',
       createdAt: _asDateTimeOrNull(map['createdAt']),
     );
@@ -38,6 +41,7 @@ class StoreModel {
       'city': city,
       'neighborhood': neighborhood,
       if (address != null) 'address': address,
+      if (geoPoint != null) 'geoPoint': geoPoint,
       'createdBy': createdBy,
       if (createdAt != null) 'createdAt': Timestamp.fromDate(createdAt!),
     };
@@ -48,6 +52,7 @@ class StoreModel {
     String? city,
     String? neighborhood,
     Object? address = _unset,
+    Object? geoPoint = _unset,
     String? createdBy,
     DateTime? createdAt,
   }) {
@@ -57,6 +62,7 @@ class StoreModel {
       city: city ?? this.city,
       neighborhood: neighborhood ?? this.neighborhood,
       address: identical(address, _unset) ? this.address : address as String?,
+      geoPoint: identical(geoPoint, _unset) ? this.geoPoint : geoPoint as GeoPoint?,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -80,18 +86,21 @@ class StoreModel {
             ? thisCreatedAt == null
             : (thisCreatedAt != null &&
                 otherCreatedAt.isAtSameMomentAs(thisCreatedAt));
+    final otherGeoPoint = other.geoPoint;
+    final thisGeoPoint = geoPoint;
     return other.id == id &&
         other.name == name &&
         other.city == city &&
         other.neighborhood == neighborhood &&
         other.address == address &&
+        otherGeoPoint == thisGeoPoint &&
         other.createdBy == createdBy &&
         sameCreatedAt;
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, name, city, neighborhood, address, createdBy);
+      Object.hash(id, name, city, neighborhood, address, geoPoint, createdBy);
 
   @override
   String toString() => 'StoreModel(id: $id, name: $name, city: $city)';

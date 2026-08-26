@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/firebase_providers.dart';
+import '../../../core/services/location_service.dart';
+import '../../../core/utils/geo_distance.dart';
 import '../../../core/utils/money_format.dart';
 import '../../../core/utils/time_format.dart';
+import '../../stores/data/store_repository.dart';
+import '../../stores/domain/store_model.dart';
 import '../data/offer_interaction_repository.dart';
 import '../data/offer_repository.dart';
 import '../domain/offer_comment.dart';
@@ -16,6 +21,12 @@ import 'widgets/offer_status_chip.dart';
 final _offerByIdProvider = FutureProvider.autoDispose
     .family<OfferModel?, String>((ref, offerId) {
       return ref.watch(offerRepositoryProvider).getById(offerId);
+    });
+
+/// Carrega o mercado da oferta para exibir a distância, quando disponível.
+final _storeByIdProvider = FutureProvider.autoDispose
+    .family<StoreModel?, String>((ref, storeId) {
+      return ref.watch(storeRepositoryProvider).getById(storeId);
     });
 
 /// Detalhe de uma oferta: dados completos, curtida, validação da
@@ -123,14 +134,26 @@ class _OfferNotFoundView extends StatelessWidget {
 }
 
 /// Conteúdo do detalhe quando a oferta foi carregada.
-class _OfferDetailView extends StatelessWidget {
+class _OfferDetailView extends ConsumerWidget {
   const _OfferDetailView({required this.offer});
 
   final OfferModel offer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
+    final StoreModel? store =
+        ref.watch(_storeByIdProvider(offer.storeId)).value;
+    final Position? userPosition =
+        ref.watch(currentPositionProvider).value;
+    final double? distanceKm = (store?.geoPoint == null || userPosition == null)
+        ? null
+        : haversineDistanceKm(
+            lat1: userPosition.latitude,
+            lon1: userPosition.longitude,
+            lat2: store!.geoPoint!.latitude,
+            lon2: store.geoPoint!.longitude,
+          );
     final bool showRegularPrice =
         offer.regularPrice != null && offer.regularPrice! > offer.price;
     final int? savingsPercent = showRegularPrice
@@ -223,6 +246,28 @@ class _OfferDetailView extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (distanceKm != null) ...<Widget>[
+                  const SizedBox(height: 4),
+                  Row(
+                    key: const Key('offer_detail_distance_row'),
+                    children: <Widget>[
+                      Icon(
+                        Icons.near_me_outlined,
+                        size: 18,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Distância: ${formatDistanceKm(distanceKm)}',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 6),
                 Row(
                   children: <Widget>[

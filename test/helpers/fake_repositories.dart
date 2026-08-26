@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:social_market_app/core/providers/firebase_providers.dart';
+import 'package:social_market_app/core/services/location_service.dart';
 import 'package:social_market_app/core/theme.dart';
 import 'package:social_market_app/features/offers/data/offer_interaction_repository.dart';
 import 'package:social_market_app/features/offers/data/offer_repository.dart';
@@ -370,6 +371,7 @@ class FakeStoreRepository implements StoreRepository {
         city: store.city,
         neighborhood: store.neighborhood,
         address: store.address,
+        geoPoint: store.geoPoint,
         createdBy: store.createdBy,
         createdAt: DateTime.now(),
       ),
@@ -439,6 +441,7 @@ class Phase3TestHarness {
     List<UserModel>? topUsers,
     List<StoreModel> seedStores = const <StoreModel>[],
     FakeOfferInteractionRepository? interactions,
+    this.locationService,
   }) : mockUser =
            user ??
            (MockUser(
@@ -472,6 +475,10 @@ class Phase3TestHarness {
   final FakeUserRepository userRepository;
   final FakeOfferInteractionRepository interactionsRepository;
 
+  /// LocationService injetável (geolocalização); nulo = sem override, o
+  /// que no ambiente de teste faz getCurrentPosition retornar null.
+  final LocationService? locationService;
+
   /// Constrói o app de teste já envolto em [ProviderScope] com todos os
   /// overrides aplicados (o tipo dos elementos é inferido pelo contexto,
   /// pois `Override` não é exportado publicamente no Riverpod 3.x).
@@ -494,6 +501,8 @@ class Phase3TestHarness {
         ),
         storeRepositoryProvider.overrideWithValue(storesRepository),
         userRepositoryProvider.overrideWithValue(userRepository),
+        if (locationService != null)
+          locationServiceProvider.overrideWithValue(locationService!),
       ],
       child: child,
     );
